@@ -75,12 +75,11 @@ export default function ThumbnailForm({ onSubmit, isGenerating }: ThumbnailFormP
                      // The actual e.target.value will be cleared by the browser or by the explicit clear button.
                   }
                 }}
-                className="text-sm 
-                  file:font-semibold 
+                className="file:font-semibold 
                   file:bg-primary/10 
                   file:text-primary 
                   hover:file:bg-primary/20
-                  file:px-3 file:py-1.5 file:rounded-md file:mr-3"
+                  file:px-3 file:py-1 file:rounded-md file:mr-3"
               />
             </FormControl>
             {value && (
