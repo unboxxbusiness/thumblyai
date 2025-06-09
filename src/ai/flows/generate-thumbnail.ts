@@ -46,27 +46,23 @@ Recap for Clarity:
 - Text on Image: ONLY from "{{{videoTopic}}}", keep it short and bold.
 - Parameters ({{{colorScheme}}}, {{{fontPairing}}}, {{{style}}}): Guide visual choices (colors, fonts, overall aesthetic) ONLY. DO NOT write their names on the image.
 
-Your primary task is to create a YouTube thumbnail for the video titled "{{{videoTopic}}}".
-When designing, you MUST apply the latest viral YouTube clickbait thumbnail strategies. This means the thumbnail MUST exhibit the following characteristics:
-- **Bold & Clear Text:** Text must be prominent, extremely easy to read, and impactful (derived ONLY from "{{{videoTopic}}}").
-- **High Contrast & Visual Pop:** Employ strong color contrasts and visual elements that make the thumbnail stand out immediately, guided by the {{{colorScheme}}} parameter.
-- **Clear Focal Point:** There must be a single, unambiguous focal point that instantly draws the viewer's attention.
+Create a YouTube thumbnail for the video titled: "{{{videoTopic}}}".
+Your design MUST use the predefined color scheme ("{{{colorScheme}}}"), font pairing ("{{{fontPairing}}}"), and visual style ("{{{style}}}") for inspiration.
+The thumbnail must follow the latest viral YouTube clickbait thumbnail strategies. This means the thumbnail MUST exhibit the following characteristics:
+- **Relevant Imagery:** {{#if uploadedImageDataUri}}Use the User Provided Image (below) as the primary visual foundation.{{else}}You MUST use or generate relevant images, graphics, or visual elements based on the video topic ("{{{videoTopic}}}") to enhance context and visual appeal.{{/if}}
+- **Clear Focal Point:** Establish a clear focal point, such as an expressive face, a key object related to the topic, or a compelling visual element that instantly draws the viewer's attention.
+- **Bold, High-Contrast Text:** Text (derived ONLY from "{{{videoTopic}}}") must be prominent, extremely easy to read, impactful, and feature high contrast against its background.
 - **Minimal Clutter:** The design should be clean and uncluttered, focusing on a singular message or visual to avoid overwhelming the viewer.
-- **Attention-Grabbing Visual Elements:** Incorporate elements that are inherently eye-catching and directly relevant to the video's topic.
-- **Optimized for Clicks & Small Sizes:** The design must be engineered for maximum click-through rates and maintain its clarity and impact even when viewed as a small icon.
-- **Professional & Relevant:** The overall look should be polished, high-quality, and accurately represent the content of the video.
-
-Use the following parameters to guide the visual design according to the rules above:
-Color Scheme (for visual design guidance): {{{colorScheme}}}
-Font Pairing (for visual font style guidance): {{{fontPairing}}}
-Style (for overall visual aesthetic guidance): {{{style}}}
+- **Attention-Grabbing Visual Elements:** Incorporate visual elements that capture attention and are directly relevant to the video's content.
+- **Optimized for Clicks & Small Sizes:** The design must be engineered for maximum click-through rates and must look clear, legible, and effective even when viewed as a small thumbnail (e.g., standard YouTube sizes like 1280x720).
+- **Professional & Engaging:** The overall look should be polished, high-quality, and accurately represent the content of the video in an engaging way.
 
 {{#if uploadedImageDataUri}}
 User Provided Image: {{media url=uploadedImageDataUri}}
 CRITICAL INSTRUCTION (User Image Provided): A user-uploaded image is provided. YOU MUST use this uploaded image as the ABSOLUTE PRIMARY VISUAL FOUNDATION for the thumbnail. All other design elements (text, style, colors, composition) MUST be applied *to, around, or in direct support of* this user image. It should be the central focus or the main background. Ensure it integrates seamlessly and professionally, following all text and parameter rules.
 {{/if}}
 
-Incorporate these elements into a compelling thumbnail design. The primary text (derived *only* from the video topic) should be prominent.
+The primary text (derived *only* from the video topic) should be prominent.
 The thumbnail MUST be high resolution, targeting 1920x1080 pixels (16:9 aspect ratio), and returned as a data URI.
 FINAL AND CRITICAL REQUIREMENT: The output image dimensions MUST be exactly 1920 pixels wide by 1080 pixels tall, maintaining a 16:9 aspect ratio. The visual composition must be designed to perfectly fill a 16:9 aspect ratio display. Avoid creating content that would result in significant letterboxing or pillarboxing when displayed in a 16:9 viewport.
   `,
@@ -90,16 +86,15 @@ Recap for Clarity:
 - Parameters ("${input.colorScheme}", "${input.fontPairing}", "${input.style}"): Guide visual choices (colors, fonts, overall aesthetic) ONLY. DO NOT write their names on the image.
 
 Create a YouTube thumbnail for the video titled: "${input.videoTopic}".
-You MUST apply the latest viral YouTube clickbait thumbnail strategies. This means the thumbnail MUST exhibit the following characteristics:
-- **Bold & Clear Text:** Text must be prominent, extremely easy to read, and impactful (derived *only* from the video topic: "${input.videoTopic}").
-- **High Contrast & Visual Pop:** Employ strong color contrasts and visual elements that make the thumbnail stand out immediately, guided by the color scheme parameter: "${input.colorScheme}".
-- **Clear Focal Point:** There must be a single, unambiguous focal point that instantly draws the viewer's attention.
+Your design MUST use the predefined color scheme ("${input.colorScheme}"), font pairing ("${input.fontPairing}"), and visual style ("${input.style}") for inspiration.
+The thumbnail must follow the latest viral YouTube clickbait thumbnail strategies. This means the thumbnail MUST exhibit the following characteristics:
+- **Relevant Imagery:** ${input.uploadedImageDataUri ? "Use the User Provided Image (provided as the first media item in this prompt) as the primary visual foundation." : `You MUST use or generate relevant images, graphics, or visual elements based on the video topic ("${input.videoTopic}") to enhance context and visual appeal.`}
+- **Clear Focal Point:** Establish a clear focal point, such as an expressive face, a key object related to the topic, or a compelling visual element that instantly draws the viewer's attention.
+- **Bold, High-Contrast Text:** Text (derived ONLY from "${input.videoTopic}") must be prominent, extremely easy to read, impactful, and feature high contrast against its background.
 - **Minimal Clutter:** The design should be clean and uncluttered, focusing on a singular message or visual to avoid overwhelming the viewer.
-- **Attention-Grabbing Visual Elements:** Incorporate elements that are inherently eye-catching and directly relevant to the video's topic: "${input.videoTopic}".
-- **Optimized for Clicks & Small Sizes:** The design must be engineered for maximum click-through rates and maintain its clarity and impact even when viewed as a small icon.
-- **Professional & Relevant:** The overall look should be polished, high-quality, and accurately represent the video topic: "${input.videoTopic}".
-- Typographic Style: Apply a font style inspired by the font pairing parameter: "${input.fontPairing}".
-- Overall Aesthetic: Adhere to the style parameter: "${input.style}".
+- **Attention-Grabbing Visual Elements:** Incorporate visual elements that capture attention and are directly relevant to the video's content ("${input.videoTopic}").
+- **Optimized for Clicks & Small Sizes:** The design must be engineered for maximum click-through rates and must look clear, legible, and effective even when viewed as a small thumbnail (e.g., standard YouTube sizes like 1280x720).
+- **Professional & Engaging:** The overall look should be polished, high-quality, and accurately represent the content of the video ("${input.videoTopic}") in an engaging way.
 - Aspect Ratio & Resolution: The generated image MUST inherently be high resolution, specifically targeting 1920 pixels wide by 1080 pixels tall (a 16:9 aspect ratio). The visual composition of the generated image must be designed to perfectly fill a 16:9 aspect ratio frame. Avoid creating content that would result in significant letterboxing or pillarboxing when displayed in a 16:9 viewport.
 
 The text (derived *only* from "${input.videoTopic}") should be prominent.
@@ -111,10 +106,10 @@ Prioritize a clean aesthetic with strong typography. Ensure any human figures (i
     if (input.uploadedImageDataUri) {
       imageGenerationPromptConfig = [
         { media: { url: input.uploadedImageDataUri } },
-        { text: `${basePromptText}\n\nCRITICAL INSTRUCTION (User Image Provided):\nA user-uploaded image is provided as the first media item in this prompt. YOU MUST use this uploaded image as the_ABSOLUTE_PRIMARY_VISUAL_FOUNDATION for the thumbnail. All other design elements (text, style, colors, composition) MUST be applied *to, around, or in direct support of* this user image. It should be the central focus or the main background. Ensure it integrates seamlessly and professionally, REMEMBERING ALL CRITICAL TEXT AND PARAMETER USAGE RULES. The final image MUST target a resolution of 1920x1080 pixels.${finalResolutionInstruction}` }
+        { text: `${basePromptText}\n\nADDITIONAL EMPHASIS (User Image Provided):\nThe user-uploaded image (first media item) is paramount. Ensure it is the absolute primary visual foundation. All other elements support it. REMEMBER ALL CRITICAL TEXT AND PARAMETER USAGE RULES. The final image MUST target a resolution of 1920x1080 pixels.${finalResolutionInstruction}` }
       ];
     } else {
-      imageGenerationPromptConfig = `${basePromptText}\n\nINSTRUCTION (No User Image): Generate all visual elements for the thumbnail based on the Video Topic ("${input.videoTopic}"). REMEMBER ALL CRITICAL TEXT AND PARAMETER USAGE RULES. Ensure the generated image is high resolution, specifically targeting 1920x1080 pixels (16:9 aspect ratio).${finalResolutionInstruction}`;
+      imageGenerationPromptConfig = `${basePromptText}\n\nADDITIONAL EMPHASIS (No User Image): Focus on generating compelling visuals directly related to "${input.videoTopic}". REMEMBER ALL CRITICAL TEXT AND PARAMETER USAGE RULES. Ensure the generated image is high resolution, specifically targeting 1920x1080 pixels (16:9 aspect ratio).${finalResolutionInstruction}`;
     }
 
     const {media} = await ai.generate({
