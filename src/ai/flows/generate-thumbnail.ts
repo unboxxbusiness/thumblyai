@@ -47,7 +47,7 @@ Your goal is to generate a YouTube thumbnail that is:
 - **Attention-Grabbing Elements:** Incorporate attention-grabbing visual elements that are relevant to the video topic.
 - **Optimized for Clicks & Small Sizes:** The thumbnail must be optimized for maximum clicks and maintain clarity even at small sizes.
 - **Professional & Relevant:** Looks polished, high-quality, and accurately reflects the video's content.
-- **Aspect Ratio & Resolution:** The generated image MUST inherently be high resolution, specifically targeting 1920 pixels wide by 1080 pixels tall (a 16:9 aspect ratio).
+- **Aspect Ratio & Resolution:** The generated image MUST inherently be high resolution, specifically targeting 1920 pixels wide by 1080 pixels tall (a 16:9 aspect ratio). The visual composition of the generated image must be designed to perfectly fill a 16:9 aspect ratio frame. Avoid creating content that would result in significant letterboxing or pillarboxing when displayed in a 16:9 viewport.
 
 Video Topic: {{{videoTopic}}}
 Color Scheme (for design guidance): {{{colorScheme}}}
@@ -66,7 +66,7 @@ Recap for Text: The text on the thumbnail must be concise, taken ONLY from the v
 
 Incorporate these elements into a compelling thumbnail design. The primary text (derived *only* from the video topic) should be prominent.
 The thumbnail MUST be high resolution, targeting 1920x1080 pixels (16:9 aspect ratio), and returned as a data URI.
-FINAL AND CRITICAL REQUIREMENT: The output image dimensions MUST be exactly 1920 pixels wide by 1080 pixels tall, maintaining a 16:9 aspect ratio.
+FINAL AND CRITICAL REQUIREMENT: The output image dimensions MUST be exactly 1920 pixels wide by 1080 pixels tall, maintaining a 16:9 aspect ratio. The visual composition must be designed to perfectly fill a 16:9 aspect ratio display.
   `,
 });
 
@@ -89,7 +89,7 @@ The thumbnail must be:
 - **Professional & Relevant:** Look polished, high-quality, and accurately reflect the video topic: "${input.videoTopic}".
 - Typographic Style: Apply a font style inspired by the font pairing parameter: "${input.fontPairing}".
 - Overall Aesthetic: Adhere to the style parameter: "${input.style}".
-- Aspect Ratio & Resolution: The generated image MUST inherently be high resolution, specifically targeting 1920 pixels wide by 1080 pixels tall (a 16:9 aspect ratio).
+- Aspect Ratio & Resolution: The generated image MUST inherently be high resolution, specifically targeting 1920 pixels wide by 1080 pixels tall (a 16:9 aspect ratio). The visual composition of the generated image must be designed to perfectly fill a 16:9 aspect ratio frame. Avoid creating content that would result in significant letterboxing or pillarboxing when displayed in a 16:9 viewport.
 
 IMPORTANT - PARAMETER USAGE & TEXT RESTRICTIONS (ABSOLUTELY CRITICAL):
 1. Parameter Influence, NOT Text: The selected Color Scheme ("${input.colorScheme}"), Font Pairing ("${input.fontPairing}"), and Style ("${input.style}") are for INSPIRATION and GUIDANCE of the visual design ONLY. Their names or descriptions (e.g., "Bright & Punchy", "Modern Sans Serif Duo") MUST NOT appear as text anywhere on the generated thumbnail image.
@@ -101,7 +101,7 @@ The text (derived *only* from "${input.videoTopic}") should be prominent.
 Prioritize a clean aesthetic with strong typography. Ensure any human figures (if generated or present in an uploaded image) are well-composed and look professional.`;
 
     let imageGenerationPromptConfig: string | Array<Record<string, any>>;
-    const finalResolutionInstruction = "\n\nFINAL AND CRITICAL REQUIREMENT: The output image dimensions MUST be exactly 1920 pixels wide by 1080 pixels tall, maintaining a 16:9 aspect ratio.";
+    const finalResolutionInstruction = "\n\nFINAL AND CRITICAL REQUIREMENT: The output image dimensions MUST be exactly 1920 pixels wide by 1080 pixels tall, maintaining a 16:9 aspect ratio. The visual composition must be designed to perfectly fill a 16:9 aspect ratio display.";
 
     if (input.uploadedImageDataUri) {
       imageGenerationPromptConfig = [
@@ -122,3 +122,5 @@ Prioritize a clean aesthetic with strong typography. Ensure any human figures (i
     return {thumbnailDataUri: media.url!};
   }
 );
+
+    

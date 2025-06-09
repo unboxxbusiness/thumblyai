@@ -53,7 +53,7 @@ You will be given a previous thumbnail and parameters. Your task is to regenerat
 - **Clear Focal Point & Minimal Clutter:** Ensure a clear focal point and remove any unnecessary visual clutter.
 - **Optimized for Clicks & Small Sizes:** The regenerated thumbnail must be optimized for maximum clicks and maintain clarity even at small sizes.
 - **Professional & Relevant:** Ensure a polished, high-quality finish that accurately reflects the video's content.
-- **Aspect Ratio & Resolution:** The regenerated image MUST inherently be high resolution, specifically targeting 1920 pixels wide by 1080 pixels tall (a 16:9 aspect ratio).
+- **Aspect Ratio & Resolution:** The regenerated image MUST inherently be high resolution, specifically targeting 1920 pixels wide by 1080 pixels tall (a 16:9 aspect ratio). The visual composition of the generated image must be designed to perfectly fill a 16:9 aspect ratio frame. Avoid creating content that would result in significant letterboxing or pillarboxing when displayed in a 16:9 viewport.
 
 Consider the following inputs:
 Video Topic: {{{videoTopic}}}
@@ -80,7 +80,7 @@ Recap for Text: The text on the regenerated thumbnail must be concise, taken ONL
 
 Analyze the provided image(s) and apply your expertise to enhance the design. This might involve adjusting layout, typography, color balance, or adding subtle graphic elements to increase engagement, while adhering to the specified parameters. The goal is a noticeable improvement towards a professional, modern aesthetic with clear, bold text (derived *only* from the Video Topic) and a clean layout.
 The new thumbnail MUST be high resolution, targeting 1920x1080 pixels (16:9 aspect ratio), and returned as a data URI.
-FINAL AND CRITICAL REQUIREMENT: The output image dimensions MUST be exactly 1920 pixels wide by 1080 pixels tall, maintaining a 16:9 aspect ratio.
+FINAL AND CRITICAL REQUIREMENT: The output image dimensions MUST be exactly 1920 pixels wide by 1080 pixels tall, maintaining a 16:9 aspect ratio. The visual composition must be designed to perfectly fill a 16:9 aspect ratio display.
   `,
 });
 
@@ -100,7 +100,7 @@ const regenerateThumbnailFlow = ai.defineFlow(
 - **Professional Composition & Relevance:** Ensure any human figures or key elements are well-composed, look professional, and the thumbnail accurately reflects the video topic ("${input.videoTopic}").
 - Typographic Style: Apply a font style inspired by the font pairing parameter: "${input.fontPairing}".
 - Overall Aesthetic: Adhere to the style parameter: "${input.style}".
-- Aspect Ratio & Resolution: The regenerated image MUST inherently be high resolution, specifically targeting 1920 pixels wide by 1080 pixels tall (a 16:9 aspect ratio).
+- Aspect Ratio & Resolution: The regenerated image MUST inherently be high resolution, specifically targeting 1920 pixels wide by 1080 pixels tall (a 16:9 aspect ratio). The visual composition of the generated image must be designed to perfectly fill a 16:9 aspect ratio frame. Avoid creating content that would result in significant letterboxing or pillarboxing when displayed in a 16:9 viewport.
 
 IMPORTANT - PARAMETER USAGE & TEXT RESTRICTIONS (ABSOLUTELY CRITICAL FOR REGENERATION):
 1. Parameter Influence, NOT Text: The selected Color Scheme ("${input.colorScheme}"), Font Pairing ("${input.fontPairing}"), and Style ("${input.style}") are for INSPIRATION and GUIDANCE of the visual design ONLY. Their names or descriptions (e.g., "Bright & Punchy", "Modern Sans Serif Duo") MUST NOT appear as text anywhere on the regenerated thumbnail image.
@@ -115,7 +115,7 @@ Aim for a clear upgrade, featuring strong, legible text (derived *only* from "${
     ];
 
     let regenerationInstructionsText = baseRegenerationText;
-    const finalResolutionInstruction = "\n\nFINAL AND CRITICAL REQUIREMENT: The output image dimensions MUST be exactly 1920 pixels wide by 1080 pixels tall, maintaining a 16:9 aspect ratio.";
+    const finalResolutionInstruction = "\n\nFINAL AND CRITICAL REQUIREMENT: The output image dimensions MUST be exactly 1920 pixels wide by 1080 pixels tall, maintaining a 16:9 aspect ratio. The visual composition must be designed to perfectly fill a 16:9 aspect ratio display.";
 
 
     if (input.uploadedImageDataUri) {
@@ -137,3 +137,5 @@ Aim for a clear upgrade, featuring strong, legible text (derived *only* from "${
     return {thumbnail: media.url!};
   }
 );
+
+    
