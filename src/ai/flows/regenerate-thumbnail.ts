@@ -40,8 +40,6 @@ export async function regenerateThumbnail(input: RegenerateThumbnailInput): Prom
   return regenerateThumbnailFlow(input);
 }
 
-// This definePrompt is good for schema definition.
-// The main flow will construct a more complex prompt for image generation.
 const regenerateThumbnailPrompt = ai.definePrompt({
   name: 'regenerateThumbnailPrompt',
   input: {schema: RegenerateThumbnailInputSchema},
@@ -52,7 +50,7 @@ You will be given a previous thumbnail and parameters. Your task is to regenerat
 - **Modern & Engaging:** Align with current YouTube design trends focusing on clarity, bold typography, and high visual appeal.
 - **Click-Worthy:** Optimize for higher click-through rates.
 - **Professional:** Ensure a polished, high-quality finish.
-- **Clearer & More Impactful:** Improve text legibility, color contrast, and overall composition.
+- **Clearer & More Impactful:** Improve text legibility, color contrast, and overall composition. The text on the thumbnail should primarily be derived *only* from the 'Video Topic', keeping it concise and impactful. Avoid any extraneous words or sentences.
 
 Consider the following inputs:
 Video Topic: {{{videoTopic}}}
@@ -62,15 +60,15 @@ Style: {{{style}}}
 Previous Thumbnail: {{media url=previousThumbnail}}
 {{#if uploadedImageDataUri}}
 New User Provided Image: {{media url=uploadedImageDataUri}}
-Instruction: A new image has also been uploaded. Integrate this new image prominently into the regenerated thumbnail, possibly replacing elements from the 'Previous Thumbnail' or using it as the new primary visual. Ensure it blends well with the overall style, topic, color scheme, and font pairing, and improve upon the previous design. The text on the thumbnail should primarily be derived from the 'Video Topic'.
+Instruction: A new image has also been uploaded. Integrate this new image prominently into the regenerated thumbnail, possibly replacing elements from the 'Previous Thumbnail' or using it as the new primary visual. Ensure it blends well with the overall style, topic, color scheme, and font pairing, and improve upon the previous design. The text on the thumbnail should primarily be derived *only* from the 'Video Topic', keeping it concise.
 {{else}}
-Instruction: Analyze the 'Previous Thumbnail' and apply your expertise to enhance its design based on the other parameters. The text on the thumbnail should primarily be derived from the 'Video Topic'.
+Instruction: Analyze the 'Previous Thumbnail' and apply your expertise to enhance its design based on the other parameters. The text on the thumbnail should primarily be derived *only* from the 'Video Topic', keeping it concise.
 {{/if}}
 
 IMPORTANT: Do NOT include the literal names of the color scheme, font pairing, or style as text in the new thumbnail image. Instead, *use* these selections to *guide* the visual design choices, improving upon the previous thumbnail.
 
-Analyze the previous thumbnail and apply your expertise to enhance its design. This might involve adjusting layout, typography, color balance, or adding subtle graphic elements to increase engagement, while adhering to the specified parameters. The goal is a noticeable improvement towards a professional, modern aesthetic with clear, bold text and a clean layout.
-Return the new thumbnail as a data URI.
+Analyze the previous thumbnail and apply your expertise to enhance its design. This might involve adjusting layout, typography, color balance, or adding subtle graphic elements to increase engagement, while adhering to the specified parameters. The goal is a noticeable improvement towards a professional, modern aesthetic with clear, bold text (derived *only* from the Video Topic) and a clean layout.
+The new thumbnail should be high resolution, suitable for a YouTube thumbnail (16:9 aspect ratio), and returned as a data URI.
   `,
 });
 
@@ -84,19 +82,19 @@ const regenerateThumbnailFlow = ai.defineFlow(
     const baseRegenerationText = `Regenerate the thumbnail to be significantly more modern, engaging, and professional, in the style of top YouTube creators like Ali Abdaal.
 Focus on:
 - **Improved Visual Appeal:** Make it cleaner, more minimalist yet eye-catching.
-- **Bolder & Clearer Typography:** Ensure text derived from the video topic ("${input.videoTopic}") is highly legible and impactful.
+- **Bolder & Clearer Typography:** Ensure text is highly legible and impactful. The text on the thumbnail should *only* be the most essential part of the video topic: "${input.videoTopic}", keeping it concise.
 - **Enhanced Contrast & Colors:** Optimize color usage for pop and readability based on the selected color scheme: "${input.colorScheme}".
 - **Increased Click-Worthiness:** Design for maximum engagement.
 - **Professional Composition:** Ensure any human figures or key elements are well-composed and look professional.
 - Typographic Style: Apply a font style inspired by "${input.fontPairing}".
 - Overall Aesthetic: Adhere to the style: "${input.style}".
 
-IMPORTANT: Do NOT include the literal names of the color scheme, font pairing, or style as text on the thumbnail image itself. Instead, *use* these selections to *guide* the visual design choices. The text on the thumbnail should primarily be derived from the 'Video Topic'.
+IMPORTANT: Do NOT include the literal names of the color scheme, font pairing, or style as text on the thumbnail image itself. Instead, *use* these selections to *guide* the visual design choices. The text on the thumbnail should primarily be derived *only* from the 'Video Topic'.
 
-Aim for a clear upgrade, featuring strong, legible text and a clean, uncluttered layout. Ensure the final image is high resolution.`;
+Aim for a clear upgrade, featuring strong, legible text (derived *only* from "${input.videoTopic}") and a clean, uncluttered layout. Avoid any extraneous words or sentences. The regenerated image should be high resolution, ideally suitable for a 1920x1080 YouTube thumbnail (16:9 aspect ratio).`;
 
     const promptParts: Array<Record<string, any>> = [
-      { media: { url: input.previousThumbnail } }, 
+      { media: { url: input.previousThumbnail } },
     ];
 
     let regenerationInstructionsText = baseRegenerationText;
@@ -107,11 +105,11 @@ Aim for a clear upgrade, featuring strong, legible text and a clean, uncluttered
 The FIRST image provided in the context is the *previous thumbnail*.
 The SECOND image provided in the context is a *newly uploaded image* by the user.
 Please regenerate the thumbnail. Prioritize incorporating the NEWLY UPLOADED IMAGE (second image) as the primary visual element or background. You may draw inspiration or elements from the PREVIOUS THUMBNAIL (first image) if they complement the new image and the overall design goals.
-The goal is to create an improved thumbnail based on the Video Topic ("${input.videoTopic}"), Color Scheme ("${input.colorScheme}"), Font Pairing ("${input.fontPairing}"), and Style ("${input.style}"), strongly featuring the new user-uploaded image.`;
+The goal is to create an improved thumbnail based on the Video Topic ("${input.videoTopic}"), Color Scheme ("${input.colorScheme}"), Font Pairing ("${input.fontPairing}"), and Style ("${input.style}"), strongly featuring the new user-uploaded image. The text on the thumbnail should be *only* the most essential part of the video topic, keeping it concise.`;
     } else {
       regenerationInstructionsText += `\n\nINSTRUCTION FOR REGENERATION (SINGLE-IMAGE CONTEXT):
 The image provided in the context is the *previous thumbnail*.
-Refine this design to make it significantly better, adhering to the Video Topic ("${input.videoTopic}"), Color Scheme ("${input.colorScheme}"), Font Pairing ("${input.fontPairing}"), and Style ("${input.style}").`;
+Refine this design to make it significantly better, adhering to the Video Topic ("${input.videoTopic}"), Color Scheme ("${input.colorScheme}"), Font Pairing ("${input.fontPairing}"), and Style ("${input.style}"). The text on the thumbnail should be *only* the most essential part of the video topic, keeping it concise.`;
     }
     promptParts.push({text: regenerationInstructionsText});
 
@@ -126,3 +124,4 @@ Refine this design to make it significantly better, adhering to the Video Topic 
     return {thumbnail: media.url!};
   }
 );
+
