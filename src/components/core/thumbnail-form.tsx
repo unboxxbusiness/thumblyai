@@ -63,8 +63,17 @@ export default function ThumbnailForm({ onSubmit, isGenerating }: ThumbnailFormP
                   } else {
                     onChange(undefined);
                   }
-                  // Reset file input value to allow re-uploading the same file if cleared
-                  if (e.target) e.target.value = '';
+                  // Reset file input value to allow re-uploading the same file if cleared,
+                  // but only if a value was previously set by this onChange.
+                  // This avoids clearing it if the user cancels the file dialog without selecting.
+                  if (!file && value) {
+                     if (e.target) e.target.value = '';
+                  } else if (!file && !value) {
+                    // Do nothing if no file selected and no previous value
+                  } else {
+                     // A file was selected, or a file was cleared where there was one.
+                     // The actual e.target.value will be cleared by the browser or by the explicit clear button.
+                  }
                 }}
                 className="block w-full text-sm text-slate-500
                   file:mr-4 file:py-2 file:px-4
@@ -76,13 +85,20 @@ export default function ThumbnailForm({ onSubmit, isGenerating }: ThumbnailFormP
             </FormControl>
             {value && (
               <div className="mt-2 flex items-center gap-2">
-                <span className="text-sm text-muted-foreground truncate max-w-[200px]">Image selected</span>
+                <span className="text-sm text-muted-foreground truncate max-w-[200px] min-w-0">Image selected</span>
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
                   className="h-6 w-6 text-muted-foreground hover:text-destructive"
-                  onClick={() => onChange(undefined)}
+                  onClick={() => {
+                    onChange(undefined);
+                    // Also clear the file input element visually
+                    const fileInput = document.getElementById('uploadedImage') as HTMLInputElement | null;
+                    if (fileInput) {
+                      fileInput.value = '';
+                    }
+                  }}
                 >
                   <XCircle className="h-4 w-4" />
                   <span className="sr-only">Clear uploaded image</span>
