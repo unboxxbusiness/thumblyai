@@ -44,13 +44,15 @@ const regenerateThumbnailPrompt = ai.definePrompt({
   name: 'regenerateThumbnailPrompt',
   input: {schema: RegenerateThumbnailInputSchema},
   output: {schema: RegenerateThumbnailOutputSchema},
-  prompt: `You are an expert YouTube thumbnail designer, specializing in refining and elevating thumbnails to match the style of top creators (e.g., Ali Abdaal).
+  prompt: `You are an expert YouTube thumbnail designer, specializing in refining thumbnails to align with the latest viral YouTube clickbait strategies.
 
-You will be given a previous thumbnail and parameters. Your task is to regenerate the thumbnail, making it significantly more:
-- **Modern & Engaging:** Align with current YouTube design trends focusing on clarity, bold typography, and high visual appeal.
-- **Significantly Increased Click-Worthiness & Modern Appeal:** Elevate the design to be highly compelling by adopting cutting-edge YouTube thumbnail strategies for maximum engagement and a modern, professional look (e.g., Ali Abdaal). This involves dramatically enhancing visual impact (e.g., more dynamic compositions, intriguing elements, clear subject focus, or emotion-driven imagery if appropriate), making text even bolder, clearer, and more prominent, and optimizing colors/contrast for immediate attention, all while improving relevance and directness to the video topic.
-- **Professional:** Ensure a polished, high-quality finish.
-- **Clearer & More Impactful:** Improve text legibility, color contrast, and overall composition.
+You will be given a previous thumbnail and parameters. Your task is to regenerate the thumbnail, making it align with the latest viral YouTube clickbait strategies and significantly more:
+- **Styled for Maximum Impact & Engagement:** Elevate the design to be highly compelling by adopting cutting-edge YouTube thumbnail strategies. This involves dramatically enhancing visual impact through dynamic compositions, intriguing and attention-grabbing elements, and a clear subject focus.
+- **Bold & Clearer Text:** Make text even bolder, clearer, and more prominent.
+- **Optimized Colors & High Contrast:** Optimize colors/contrast for immediate attention and visual pop.
+- **Clear Focal Point & Minimal Clutter:** Ensure a clear focal point and remove any unnecessary visual clutter.
+- **Optimized for Clicks & Small Sizes:** The regenerated thumbnail must be optimized for maximum clicks and maintain clarity even at small sizes.
+- **Professional & Relevant:** Ensure a polished, high-quality finish that accurately reflects the video's content.
 - **Aspect Ratio & Resolution:** The regenerated image MUST inherently be high resolution, specifically targeting 1920 pixels wide by 1080 pixels tall (a 16:9 aspect ratio).
 
 Consider the following inputs:
@@ -62,9 +64,12 @@ Previous Thumbnail: {{media url=previousThumbnail}}
 
 {{#if uploadedImageDataUri}}
 New User Provided Image: {{media url=uploadedImageDataUri}}
-Instruction for New User Image: A new image has also been uploaded (second media item). YOU MUST prioritize and prominently integrate this NEW user-provided image into the regenerated thumbnail. It should replace elements from the 'Previous Thumbnail' or become the new primary visual. Ensure it blends seamlessly and professionally with the overall style, topic, color scheme, and font pairing, improving upon the previous design.
+CRITICAL INSTRUCTION FOR REGENERATION (NEW USER IMAGE PROVIDED):
+- The FIRST media item in this prompt is the *previous thumbnail*.
+- The SECOND media item in this prompt is a *newly uploaded image* by the user.
+YOUR ABSOLUTE TOP PRIORITY is to use the NEWLY UPLOADED IMAGE (the second media item) as the dominant visual foundation for the regenerated thumbnail. It must be the central focus or main background. You may draw MINOR inspiration or subtle elements from the PREVIOUS THUMBNAIL (the first media item) ONLY if they directly enhance and integrate seamlessly with the new uploaded image and fit the overall design goals of clarity, modernity, and professionalism. The final design MUST heavily feature and be built around the new user-uploaded image.
 {{else}}
-Instruction for Previous Thumbnail: Analyze the 'Previous Thumbnail' (first media item) and apply your expertise to significantly enhance its design based on the other parameters.
+Instruction for Previous Thumbnail: Analyze the 'Previous Thumbnail' (first media item) and apply your expertise to significantly enhance its design based on the other parameters, aligning with the quality goals mentioned above.
 {{/if}}
 
 IMPORTANT - PARAMETER USAGE & TEXT RESTRICTIONS (ABSOLUTELY CRITICAL FOR REGENERATION):
@@ -73,7 +78,7 @@ IMPORTANT - PARAMETER USAGE & TEXT RESTRICTIONS (ABSOLUTELY CRITICAL FOR REGENER
 
 Recap for Text: The text on the regenerated thumbnail must be concise, taken ONLY from the video topic. All other parameters guide the visual style, not the text content.
 
-Analyze the provided image(s) and apply your expertise to enhance the design. This might involve adjusting layout, typography, color balance, or adding subtle graphic elements to increase engagement, while adhering to the specified parameters. The goal is a noticeable improvement towards a professional, modern aesthetic with clear, bold text (derived *only*from the Video Topic) and a clean layout.
+Analyze the provided image(s) and apply your expertise to enhance the design. This might involve adjusting layout, typography, color balance, or adding subtle graphic elements to increase engagement, while adhering to the specified parameters. The goal is a noticeable improvement towards a professional, modern aesthetic with clear, bold text (derived *only* from the Video Topic) and a clean layout.
 The new thumbnail MUST be high resolution, targeting 1920x1080 pixels (16:9 aspect ratio), and returned as a data URI.
   `,
 });
@@ -85,13 +90,13 @@ const regenerateThumbnailFlow = ai.defineFlow(
     outputSchema: RegenerateThumbnailOutputSchema,
   },
   async input => {
-    const baseRegenerationText = `Regenerate the thumbnail to be significantly more modern, engaging, and professional, in the style of top YouTube creators like Ali Abdaal.
-Focus on:
-- **Improved Visual Appeal:** Make it cleaner, more minimalist yet eye-catching.
-- **Bolder & Clearer Typography:** Ensure text is highly legible and impactful.
-- **Enhanced Contrast & Colors:** Optimize color usage for pop and readability based on the selected color scheme parameter: "${input.colorScheme}".
-- **Significantly Increased Click-Worthiness & Modern Appeal:** Elevate the design to be highly compelling by adopting cutting-edge YouTube thumbnail strategies for maximum engagement and a modern, professional look (e.g., Ali Abdaal). This involves dramatically enhancing visual impact (e.g., more dynamic compositions, intriguing elements, clear subject focus, or emotion-driven imagery if appropriate), making text even bolder, clearer, and more prominent, and optimizing colors/contrast for immediate attention, all while improving relevance and directness to the video topic.
-- **Professional Composition:** Ensure any human figures or key elements are well-composed and look professional.
+    const baseRegenerationText = `Regenerate the thumbnail for video topic "${input.videoTopic}" to align with the latest viral YouTube clickbait strategies and make it significantly more:
+- **Styled for Maximum Impact & Engagement:** Elevate the design to be highly compelling by adopting cutting-edge YouTube thumbnail strategies for maximum engagement. This includes dramatically enhancing visual impact through dynamic compositions, intriguing and attention-grabbing elements relevant to the video topic ("${input.videoTopic}"), and a clear subject focus.
+- **Bolder & Clearer Text:** Make text (derived *only* from the video topic: "${input.videoTopic}") even bolder, clearer, and more prominent.
+- **Optimized Colors & High Contrast:** Optimize color usage for pop and readability, based on the selected color scheme parameter: "${input.colorScheme}", ensuring high contrast.
+- **Clear Focal Point & Minimal Clutter:** Ensure a clear focal point and remove any unnecessary visual clutter.
+- **Optimized for Clicks & Small Sizes:** The regenerated thumbnail must be optimized for maximum clicks and maintain clarity even at small sizes.
+- **Professional Composition & Relevance:** Ensure any human figures or key elements are well-composed, look professional, and the thumbnail accurately reflects the video topic ("${input.videoTopic}").
 - Typographic Style: Apply a font style inspired by the font pairing parameter: "${input.fontPairing}".
 - Overall Aesthetic: Adhere to the style parameter: "${input.style}".
 - Aspect Ratio & Resolution: The regenerated image MUST inherently be high resolution, specifically targeting 1920 pixels wide by 1080 pixels tall (a 16:9 aspect ratio).
