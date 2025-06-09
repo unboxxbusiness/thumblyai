@@ -36,31 +36,32 @@ export default function DownloadButton({
         return;
       }
 
-      const imgAspectRatio = img.width / img.height;
+      // Fill background with black (for letterboxing/pillarboxing if needed)
+      ctx.fillStyle = 'black';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Calculate new dimensions to "contain" the image within the canvas while maintaining aspect ratio
+      const imageAspectRatio = img.width / img.height;
       const canvasAspectRatio = canvas.width / canvas.height;
       
-      let sx = 0, sy = 0, sWidth = img.width, sHeight = img.height;
+      let scaledWidth, scaledHeight, dx, dy;
 
-      // "Cover" logic: Calculate source rectangle (from original image)
-      // to draw onto the destination canvas, cropping from the center.
-      if (imgAspectRatio > canvasAspectRatio) {
-        // Image is wider than canvas aspect ratio: image needs to be cropped horizontally.
-        // Source width will be smaller, source height will be full image height.
-        sWidth = img.height * canvasAspectRatio;
-        sx = (img.width - sWidth) / 2;
-        // sy remains 0, sHeight remains img.height
-      } else if (imgAspectRatio < canvasAspectRatio) {
-        // Image is taller than canvas aspect ratio: image needs to be cropped vertically.
-        // Source height will be smaller, source width will be full image width.
-        sHeight = img.width / canvasAspectRatio;
-        sy = (img.height - sHeight) / 2;
-        // sx remains 0, sWidth remains img.width
+      if (imageAspectRatio > canvasAspectRatio) {
+        // Image is wider than canvas aspect ratio (needs letterboxing if canvas is taller, or fits width and centers vertically)
+        scaledWidth = canvas.width;
+        scaledHeight = canvas.width / imageAspectRatio;
+      } else {
+        // Image is taller than canvas aspect ratio (needs pillarboxing if canvas is wider, or fits height and centers horizontally)
+        scaledHeight = canvas.height;
+        scaledWidth = canvas.height * imageAspectRatio;
       }
-      // If imgAspectRatio is equal to canvasAspectRatio, no cropping is needed.
-      // sx, sy will be 0,0 and sWidth, sHeight will be img.width, img.height.
+
+      // Calculate offsets to center the image on the canvas
+      dx = (canvas.width - scaledWidth) / 2;
+      dy = (canvas.height - scaledHeight) / 2;
       
-      // Draw the calculated portion of the image onto the canvas, scaling it to fill the canvas.
-      ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, canvas.width, canvas.height);
+      // Draw the image onto the canvas
+      ctx.drawImage(img, 0, 0, img.width, img.height, dx, dy, scaledWidth, scaledHeight);
       
       try {
         const dataUrl = canvas.toDataURL("image/png");
