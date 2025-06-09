@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -32,7 +33,7 @@ export default function ThumbnailDisplay({
     return (
       <Card className="w-full shadow-lg">
         <CardHeader>
-          <CardTitle className="font-headline">Generating Your Thumbnail...</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl font-headline">Generating Your Thumbnail...</CardTitle>
         </CardHeader>
         <CardContent className="flex items-center justify-center min-h-[300px] md:min-h-[400px]">
           <LoadingIndicator text="AI is working its magic!" size={48} />
@@ -45,13 +46,13 @@ export default function ThumbnailDisplay({
     return (
        <Card className="w-full shadow-lg border-destructive">
         <CardHeader>
-          <CardTitle className="font-headline text-destructive flex items-center">
+          <CardTitle className="text-xl sm:text-2xl font-headline text-destructive flex items-center">
             <AlertTriangle className="mr-2 h-5 w-5" />
             Generation Failed
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center min-h-[200px]">
-          <p className="text-destructive mb-4">{error}</p>
+          <p className="text-destructive mb-4 text-sm">{error}</p>
           <Button onClick={onRegenerate} disabled={isRegenerating} variant="destructive">
             {isRegenerating ? (
               <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
@@ -69,10 +70,10 @@ export default function ThumbnailDisplay({
     return (
       <Card className="w-full shadow-lg">
         <CardHeader>
-          <CardTitle className="font-headline">Your Thumbnail Will Appear Here</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl font-headline">Your Thumbnail Will Appear Here</CardTitle>
         </CardHeader>
         <CardContent className="flex items-center justify-center min-h-[300px] md:min-h-[400px] bg-muted/30 rounded-md">
-          <p className="text-muted-foreground">Fill out the form above to generate your thumbnail.</p>
+          <p className="text-muted-foreground text-sm text-center px-4">Fill out the form above to generate your thumbnail.</p>
         </CardContent>
       </Card>
     );
@@ -81,7 +82,7 @@ export default function ThumbnailDisplay({
   return (
     <Card className="w-full shadow-lg overflow-hidden">
       <CardHeader>
-        <CardTitle className="font-headline">Your Generated Thumbnail</CardTitle>
+        <CardTitle className="text-xl sm:text-2xl font-headline">Your Generated Thumbnail</CardTitle>
       </CardHeader>
       <CardContent className="relative aspect-video w-full bg-muted/30">
         {isRegenerating && (
@@ -92,7 +93,7 @@ export default function ThumbnailDisplay({
          {error && !isRegenerating && (
             <div className="absolute inset-0 bg-destructive/80 flex flex-col items-center justify-center z-10 p-4 text-center">
                 <AlertTriangle className="h-8 w-8 text-destructive-foreground mb-2" />
-                <p className="text-destructive-foreground text-sm mb-2">Regeneration failed: {error}</p>
+                <p className="text-destructive-foreground text-xs sm:text-sm mb-2">Regeneration failed: {error}</p>
                 <Button onClick={onRegenerate} variant="outline" size="sm" className="bg-destructive-foreground text-destructive hover:bg-destructive-foreground/90">
                     <RefreshCw className="mr-2 h-4 w-4" /> Try Regenerating Again
                 </Button>

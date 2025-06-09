@@ -89,12 +89,12 @@ export default function ThumbnailGeneratorClient() {
   };
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-8 md:space-y-12">
       <section className="text-center">
-        <h1 className="text-4xl md:text-5xl font-bold font-headline mb-4">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold font-headline mb-3 sm:mb-4">
           Create <span className="text-primary">Stunning</span> Thumbnails with AI
         </h1>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-md sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
           Describe your video, pick your style, (optionally) upload an image, and let Thumbly Ai craft the perfect thumbnail.
         </p>
       </section>
@@ -102,7 +102,7 @@ export default function ThumbnailGeneratorClient() {
       <FormProvider {...formMethods}>
         <Card className="shadow-xl">
           <CardHeader>
-            <CardTitle className="text-2xl font-headline">Thumbnail Settings</CardTitle>
+            <CardTitle className="text-xl sm:text-2xl font-headline">Thumbnail Settings</CardTitle>
             <CardDescription>Tell us about your video to get started. You can also upload an image to include.</CardDescription>
           </CardHeader>
           <CardContent>
