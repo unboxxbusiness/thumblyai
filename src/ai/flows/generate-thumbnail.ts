@@ -1,4 +1,3 @@
-
 // src/ai/flows/generate-thumbnail.ts
 'use server';
 /**
@@ -38,8 +37,8 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateThumbnailOutputSchema},
   prompt: `!!! EXTREMELY IMPORTANT RULES FOR TEXT ON THE THUMBNAIL !!!
 1.  **NO DESCRIPTIVE TEXT FROM PARAMETERS:** The "Color Scheme" ({{{colorScheme}}}), "Font Pairing" ({{{fontPairing}}}), and "Style" ({{{style}}}) parameters are for VISUAL INSPIRATION ONLY. Their names or any descriptive text about them MUST NOT appear on the image.
-2.  **ONLY VIDEO TOPIC TEXT:** The ONLY text allowed on the thumbnail image is a very short, impactful phrase derived SOLELY from the Video Topic: "{{{videoTopic}}}". Do NOT include any other words, numbers, or characters.
-3.  **VIOLATION CHECK:** Before outputting the image, double-check that NO unintended text (like parameter names or parts of these instructions) has been accidentally included on the image. Only text from "{{{videoTopic}}}" is permitted.
+2.  **ONLY VIDEO TOPIC TEXT:** The ONLY text allowed on the thumbnail image is a very short, impactful phrase derived SOLELY from the Video Topic: "{{{videoTopic}}}". Do NOT include any other words, numbers, or characters. No extra text, no extra comments, no extra content beyond this specific instruction.
+3.  **VIOLATION CHECK:** Before outputting the image, double-check and verify that NO unintended text (like parameter names, parts of these instructions, or any other stray characters) has been accidentally included on the image. Only text from "{{{videoTopic}}}" is permitted.
 
 Create a YouTube thumbnail for the video titled: "{{{videoTopic}}}".
 Your design MUST use the predefined color scheme ("{{{colorScheme}}}"), font pairing ("{{{fontPairing}}}"), and visual style ("{{{style}}}") for inspiration.
@@ -50,7 +49,6 @@ The thumbnail must follow the latest viral YouTube clickbait thumbnail strategie
 - **Minimal Clutter:** The design should be clean and uncluttered, focusing on a singular message or visual to avoid overwhelming the viewer.
 - **Attention-Grabbing Visual Elements:** Incorporate visual elements that immediately attract attention and are directly relevant to the video's content ("{{{videoTopic}}}").
 - **Optimized for Clicks & Small Sizes:** The design must be fully optimized for maximum click-through rate and must look clear, legible, and effective even when viewed as a small thumbnail.
-- **Professional & Engaging:** The overall look should be polished, high-quality, and accurately represent the content of the video in an engaging way.
 
 {{#if uploadedImageDataUri}}
 User Provided Image: {{media url=uploadedImageDataUri}}
@@ -61,7 +59,7 @@ The primary text (derived *only* from the video topic) should be prominent.
 FINAL AND CRITICAL REQUIREMENT FOR IMAGE GENERATION:
 The output image dimensions MUST be exactly 1280 pixels wide by 720 pixels tall (a 16:9 aspect ratio).
 The visual composition must be designed to perfectly fill this 1280x720 canvas.
-There must be NO black bars, NO cropping by the AI, and NO padding within the generated image. The generated content itself MUST utilize the full 1280x720 image canvas.
+There must be NO black bars, NO cropping by the AI, and NO padding within the generated image. The generated content itself MUST utilize the full 1280x720 image canvas for direct download and upload compatibility.
 Return the image as a data URI.
   `,
 });
@@ -75,8 +73,8 @@ const generateThumbnailFlow = ai.defineFlow(
   async input => {
     const basePromptText = `!!! EXTREMELY IMPORTANT RULES FOR TEXT ON THE THUMBNAIL !!!
 1.  **NO DESCRIPTIVE TEXT FROM PARAMETERS:** The "Color Scheme" ("${input.colorScheme}"), "Font Pairing" ("${input.fontPairing}"), and "Style" ("${input.style}") parameters are for VISUAL INSPIRATION ONLY. Their names or any descriptive text about them MUST NOT appear on the image.
-2.  **ONLY VIDEO TOPIC TEXT:** The ONLY text allowed on the thumbnail image is a very short, impactful phrase derived SOLELY from the Video Topic: "${input.videoTopic}". Do NOT include any other words, numbers, or characters.
-3.  **VIOLATION CHECK:** Before outputting the image, double-check that NO unintended text (like parameter names or parts of these instructions) has been accidentally included on the image. Only text from "${input.videoTopic}" is permitted.
+2.  **ONLY VIDEO TOPIC TEXT:** The ONLY text allowed on the thumbnail image is a very short, impactful phrase derived SOLELY from the Video Topic: "${input.videoTopic}". Do NOT include any other words, numbers, or characters. No extra text, no extra comments, no extra content beyond this specific instruction.
+3.  **VIOLATION CHECK:** Before outputting the image, double-check and verify that NO unintended text (like parameter names, parts of these instructions, or any other stray characters) has been accidentally included on the image. Only text from "${input.videoTopic}" is permitted.
 
 Create a YouTube thumbnail for the video titled: "${input.videoTopic}".
 Your design MUST use the predefined color scheme ("${input.colorScheme}"), font pairing ("${input.fontPairing}"), and visual style ("${input.style}") for inspiration.
@@ -87,7 +85,6 @@ The thumbnail must follow the latest viral YouTube clickbait thumbnail strategie
 - **Minimal Clutter:** The design should be clean and uncluttered, focusing on a singular message or visual to avoid overwhelming the viewer.
 - **Attention-Grabbing Visual Elements:** Incorporate visual elements that immediately attract attention and are directly relevant to the video's content ("${input.videoTopic}").
 - **Optimized for Clicks & Small Sizes:** The design must be fully optimized for maximum click-through rate and must look clear, legible, and effective even when viewed as a small thumbnail.
-- **Professional & Engaging:** The overall look should be polished, high-quality, and accurately represent the content of the video ("${input.videoTopic}") in an engaging way.
 
 The text (derived *only* from "${input.videoTopic}") should be prominent.
 Prioritize a clean aesthetic with strong typography. Ensure any human figures (if generated or present in an uploaded image) are well-composed and look professional.`;
@@ -97,15 +94,15 @@ Prioritize a clean aesthetic with strong typography. Ensure any human figures (i
 FINAL AND CRITICAL REQUIREMENT FOR IMAGE GENERATION:
 The output image dimensions MUST be exactly 1280 pixels wide by 720 pixels tall (a 16:9 aspect ratio).
 The visual composition must be designed to perfectly fill this 1280x720 canvas.
-There must be NO black bars, NO cropping by the AI, and NO padding within the generated image. The generated content itself MUST utilize the full 1280x720 image canvas.`;
+There must be NO black bars, NO cropping by the AI, and NO padding within the generated image. The generated content itself MUST utilize the full 1280x720 image canvas for direct download and upload compatibility.`;
 
     if (input.uploadedImageDataUri) {
       imageGenerationPromptConfig = [
         { media: { url: input.uploadedImageDataUri } },
-        { text: `${basePromptText}\n\nADDITIONAL EMPHASIS (User Image Provided):\nThe user-uploaded image (first media item) is paramount. Ensure it is the absolute primary visual foundation. All other elements support it. REMEMBER ALL EXTREMELY IMPORTANT TEXT RULES AND PARAMETER USAGE RULES.${finalResolutionInstruction}` }
+        { text: `${basePromptText}\n\nCRITICAL INSTRUCTION (User Image Provided): A user-uploaded image is provided. YOU MUST use this uploaded image as the ABSOLUTE PRIMARY VISUAL FOUNDATION for the thumbnail. All other design elements (text, style, colors, composition) MUST be applied *to, around, or in direct support of* this user image. It should be the central focus or the main background. Ensure it integrates seamlessly and professionally, following all text and parameter rules.\n${finalResolutionInstruction}` }
       ];
     } else {
-      imageGenerationPromptConfig = `${basePromptText}\n\nADDITIONAL EMPHASIS (No User Image): Focus on generating compelling visuals directly related to "${input.videoTopic}". REMEMBER ALL EXTREMELY IMPORTANT TEXT RULES AND PARAMETER USAGE RULES.${finalResolutionInstruction}`;
+      imageGenerationPromptConfig = `${basePromptText}\n${finalResolutionInstruction}`;
     }
 
     const {media} = await ai.generate({

@@ -1,4 +1,3 @@
-
 // src/ai/flows/regenerate-thumbnail.ts
 'use server';
 
@@ -46,8 +45,8 @@ const regenerateThumbnailPrompt = ai.definePrompt({
   output: {schema: RegenerateThumbnailOutputSchema},
   prompt: `!!! EXTREMELY IMPORTANT RULES FOR TEXT ON THE THUMBNAIL (REGENERATION) !!!
 1.  **NO DESCRIPTIVE TEXT FROM PARAMETERS:** The "Color Scheme" ({{{colorScheme}}}), "Font Pairing" ({{{fontPairing}}}), and "Style" ({{{style}}}) parameters are for VISUAL INSPIRATION ONLY. Their names or any descriptive text about them MUST NOT appear on the image.
-2.  **ONLY VIDEO TOPIC TEXT:** The ONLY text allowed on the thumbnail image is a very short, impactful phrase derived SOLELY from the Video Topic: "{{{videoTopic}}}". Do NOT include any other words, numbers, or characters.
-3.  **VIOLATION CHECK:** Before outputting the image, double-check that NO unintended text (like parameter names or parts of these instructions) has been accidentally included on the image. Only text from "{{{videoTopic}}}" is permitted.
+2.  **ONLY VIDEO TOPIC TEXT:** The ONLY text allowed on the thumbnail image is a very short, impactful phrase derived SOLELY from the Video Topic: "{{{videoTopic}}}". Do NOT include any other words, numbers, or characters. No extra text, no extra comments, no extra content beyond this specific instruction.
+3.  **VIOLATION CHECK:** Before outputting the image, double-check and verify that NO unintended text (like parameter names, parts of these instructions, or any other stray characters) has been accidentally included on the image. Only text from "{{{videoTopic}}}" is permitted.
 
 Recap for Clarity (Regeneration):
 - Text on Image: ONLY from "{{{videoTopic}}}", keep it short and bold.
@@ -90,7 +89,7 @@ The goal is a noticeable improvement towards a professional, modern aesthetic wi
 FINAL AND CRITICAL REQUIREMENT FOR IMAGE GENERATION:
 The output image dimensions MUST be exactly 1280 pixels wide by 720 pixels tall (a 16:9 aspect ratio).
 The visual composition must be designed to perfectly fill this 1280x720 canvas.
-There must be NO black bars, NO cropping by the AI, and NO padding within the generated image. The generated content itself MUST utilize the full 1280x720 image canvas.
+There must be NO black bars, NO cropping by the AI, and NO padding within the generated image. The generated content itself MUST utilize the full 1280x720 image canvas for direct download and upload compatibility.
 Return the image as a data URI.
   `,
 });
@@ -104,8 +103,8 @@ const regenerateThumbnailFlow = ai.defineFlow(
   async input => {
     const baseRegenerationText = `!!! EXTREMELY IMPORTANT RULES FOR TEXT ON THE THUMBNAIL (REGENERATION) !!!
 1.  **NO DESCRIPTIVE TEXT FROM PARAMETERS:** The "Color Scheme" ("${input.colorScheme}"), "Font Pairing" ("${input.fontPairing}"), and "Style" ("${input.style}") parameters are for VISUAL INSPIRATION ONLY. Their names or any descriptive text about them MUST NOT appear on the image.
-2.  **ONLY VIDEO TOPIC TEXT:** The ONLY text allowed on the thumbnail image is a very short, impactful phrase derived SOLELY from the Video Topic: "${input.videoTopic}". Do NOT include any other words, numbers, or characters.
-3.  **VIOLATION CHECK:** Before outputting the image, double-check that NO unintended text (like parameter names or parts of these instructions) has been accidentally included on the image. Only text from "${input.videoTopic}" is permitted.
+2.  **ONLY VIDEO TOPIC TEXT:** The ONLY text allowed on the thumbnail image is a very short, impactful phrase derived SOLELY from the Video Topic: "${input.videoTopic}". Do NOT include any other words, numbers, or characters. No extra text, no extra comments, no extra content beyond this specific instruction.
+3.  **VIOLATION CHECK:** Before outputting the image, double-check and verify that NO unintended text (like parameter names, parts of these instructions, or any other stray characters) has been accidentally included on the image. Only text from "${input.videoTopic}" is permitted.
 
 Recap for Clarity (Regeneration):
 - Text on Image: ONLY from "${input.videoTopic}", keep it short and bold.
@@ -133,14 +132,14 @@ Aim for a clear upgrade, featuring strong, legible text (derived *only* from "${
 FINAL AND CRITICAL REQUIREMENT FOR IMAGE GENERATION:
 The output image dimensions MUST be exactly 1280 pixels wide by 720 pixels tall (a 16:9 aspect ratio).
 The visual composition must be designed to perfectly fill this 1280x720 canvas.
-There must be NO black bars, NO cropping by the AI, and NO padding within the generated image. The generated content itself MUST utilize the full 1280x720 image canvas.`;
+There must be NO black bars, NO cropping by the AI, and NO padding within the generated image. The generated content itself MUST utilize the full 1280x720 image canvas for direct download and upload compatibility.`;
 
 
     if (input.uploadedImageDataUri) {
       promptParts.push({ media: {url: input.uploadedImageDataUri }}); // New uploaded image is the second media item, if present.
-      regenerationInstructionsText += `\n\nADDITIONAL EMPHASIS (NEW USER IMAGE PROVIDED):\n- The FIRST media item is the *previous thumbnail*.\n- The SECOND media item is the *new user-uploaded image*.\nYOUR TOP PRIORITY is the NEWLY UPLOADED IMAGE. It's the dominant visual foundation. Minor inspiration from the PREVIOUS thumbnail is acceptable ONLY IF it enhances the new image. The final design MUST heavily feature the new user image. REMEMBER ALL EXTREMELY IMPORTANT TEXT RULES.${finalResolutionInstruction}`;
+      regenerationInstructionsText += `\n\nCRITICAL INSTRUCTION FOR REGENERATION (NEW USER IMAGE PROVIDED):\n- The FIRST media item is the *previous thumbnail*.\n- The SECOND media item is the *new user-uploaded image*.\nYOUR ABSOLUTE TOP PRIORITY is to use the NEWLY UPLOADED IMAGE as the dominant visual foundation. It must be the central focus or main background. You may draw MINOR inspiration or subtle elements from the PREVIOUS THUMBNAIL ONLY if they directly enhance and integrate seamlessly with the new uploaded image. The final design MUST heavily feature and be built around the new user-uploaded image. Remember all EXTREMELY IMPORTANT TEXT RULES.\n${finalResolutionInstruction}`;
     } else {
-      regenerationInstructionsText += `\n\nADDITIONAL EMPHASIS (NO NEW USER IMAGE):\n- The media item provided is the *previous thumbnail*.\nSignificantly refine this design based on the clickbait strategies and quality guidelines mentioned, including improving or adding relevant imagery. REMEMBER ALL EXTREMELY IMPORTANT TEXT RULES.${finalResolutionInstruction}`;
+      regenerationInstructionsText += `\n\nInstruction for Previous Thumbnail: Analyze the 'Previous Thumbnail' (first media item) and apply your expertise to significantly enhance its design based on the other parameters and the clickbait strategies. This includes potentially adding or replacing imagery to be more relevant and impactful. Align with the quality goals and EXTREMELY IMPORTANT TEXT RULES mentioned above.\n${finalResolutionInstruction}`;
     }
     promptParts.push({text: regenerationInstructionsText});
 
