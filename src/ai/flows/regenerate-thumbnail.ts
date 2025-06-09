@@ -1,3 +1,4 @@
+
 // src/ai/flows/regenerate-thumbnail.ts
 'use server';
 
@@ -50,10 +51,12 @@ You will be given a previous thumbnail and parameters. Your task is to regenerat
 
 Consider the following inputs and the previous thumbnail:
 Video Topic: {{{videoTopic}}}
-Color Scheme: {{{colorScheme}}} (Use as a guide, prioritize overall modern aesthetic)
-Font Pairing: {{{fontPairing}}} (Interpret as a general typographic style suggestion)
-Style: {{{style}}} (Ensure this aligns with a modern YouTube look)
+Color Scheme: {{{colorScheme}}}
+Font Pairing: {{{fontPairing}}}
+Style: {{{style}}}
 Previous Thumbnail: {{media url=previousThumbnail}}
+
+IMPORTANT: Do NOT include the literal names of the color scheme, font pairing, or style as text in the new thumbnail image. Instead, *use* these selections to *guide* the visual design choices, improving upon the previous thumbnail. The text on the thumbnail should primarily be derived from the 'Video Topic'.
 
 Analyze the previous thumbnail and apply your expertise to enhance its design. This might involve adjusting layout, typography, color balance, or adding subtle graphic elements to increase engagement, while adhering to the specified parameters. The goal is a noticeable improvement towards a professional, modern aesthetic with clear, bold text and a clean layout.
 Return the new thumbnail as a data URI.
@@ -75,18 +78,27 @@ const regenerateThumbnailFlow = ai.defineFlow(
           text: `Regenerate this thumbnail to be significantly more modern, engaging, and professional, in the style of top YouTube creators like Ali Abdaal.
 Focus on:
 - **Improved Visual Appeal:** Make it cleaner, more minimalist yet eye-catching.
-- **Bolder & Clearer Typography:** Ensure text is highly legible and impactful.
-- **Enhanced Contrast & Colors:** Optimize color usage for pop and readability.
+- **Bolder & Clearer Typography:** Ensure text derived from the video topic is highly legible and impactful.
+- **Enhanced Contrast & Colors:** Optimize color usage for pop and readability based on the selected color scheme.
 - **Increased Click-Worthiness:** Design for maximum engagement.
 - **Professional Composition:** Ensure any human figures or key elements are well-composed and look professional.
 
 Take into account the following parameters, using the provided image as a base for improvement:
 Video Topic: "${input.videoTopic}"
-Color Scheme: "${input.colorScheme}" (Use as a guide, prioritize overall modern aesthetic over strict adherence if it conflicts)
-Font Pairing: "${input.fontPairing}" (Interpret as a general typographic style guide, e.g., 'Modern Sans Serif Duo' means use clean sans-serif fonts)
-Style: "${input.style}" (Ensure this aligns with a modern YouTube look, e.g. minimalist, bold)
+Use this topic to derive or refine the main text for the thumbnail.
 
-Slightly adjust the design based on these principles and current trends to make it markedly more visually appealing and professional. The aim is a clear upgrade from the previous version, featuring strong, legible text and a clean, uncluttered layout.`,
+Color Scheme: "${input.colorScheme}"
+Interpret this to adjust or select colors for background, text, and graphics. For example, if the scheme is 'Dark & Moody', use darker, atmospheric colors.
+
+Font Pairing: "${input.fontPairing}"
+Interpret this as a typographic style guide. For instance, 'Classic Serif & Sans' suggests a mix of traditional serif and clean sans-serif fonts.
+
+Style: "${input.style}"
+Apply this style to the overall visual design. For example, 'Bold & Impactful' suggests strong visual elements and typography.
+
+IMPORTANT: Do NOT include the literal names of the color scheme, font pairing, or style (e.g., do not write 'Bright & Punchy' or 'Modern Sans Serif Duo' as text on the thumbnail image itself). Instead, *use* these selections to *guide* the visual design choices, improving upon the previous thumbnail. The text on the thumbnail should primarily be derived from the 'Video Topic'.
+
+Slightly adjust the design based on these principles and current trends to make it markedly more visually appealing and professional. The aim is a clear upgrade from the previous version, featuring strong, legible text and a clean, uncluttered layout. Ensure the final image is high resolution.`,
         },
       ],
       config: {
