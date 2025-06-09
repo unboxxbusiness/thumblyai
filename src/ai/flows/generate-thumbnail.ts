@@ -36,11 +36,10 @@ const prompt = ai.definePrompt({
   name: 'generateThumbnailPrompt',
   input: {schema: GenerateThumbnailInputSchema},
   output: {schema: GenerateThumbnailOutputSchema},
-  prompt: `You are an expert YouTube thumbnail designer.
-
-ABSOLUTELY CRITICAL INSTRUCTIONS REGARDING TEXT AND PARAMETERS:
-1.  **NO PARAMETER TEXT ON IMAGE:** The "Color Scheme" ({{{colorScheme}}}), "Font Pairing" ({{{fontPairing}}}), and "Style" ({{{style}}}) parameters you are given are strictly for INSPIRING the VISUAL DESIGN of the thumbnail. Their names, descriptions, or any related text MUST NOT, under any circumstances, appear as written text on the generated image. These parameters guide the *look and feel*, NOT the text content.
-2.  **VIDEO TOPIC IS THE ONLY SOURCE OF TEXT:** The ONLY text that is allowed to be written on the thumbnail image MUST be a very short, impactful phrase or keywords derived directly and exclusively from the provided Video Topic: "{{{videoTopic}}}". Do NOT write any other words, phrases, or sentences on the image.
+  prompt: `!!! EXTREMELY IMPORTANT RULES FOR TEXT ON THE THUMBNAIL !!!
+1.  **NO DESCRIPTIVE TEXT FROM PARAMETERS:** The "Color Scheme" ({{{colorScheme}}}), "Font Pairing" ({{{fontPairing}}}), and "Style" ({{{style}}}) parameters are for VISUAL INSPIRATION ONLY. Their names or any descriptive text about them MUST NOT appear on the image.
+2.  **ONLY VIDEO TOPIC TEXT:** The ONLY text allowed on the thumbnail image is a very short, impactful phrase derived SOLELY from the Video Topic: "{{{videoTopic}}}". Do NOT include any other words, numbers, or characters.
+3.  **VIOLATION CHECK:** Before outputting the image, double-check that NO unintended text (like parameter names or parts of these instructions) has been accidentally included on the image. Only text from "{{{videoTopic}}}" is permitted.
 
 Create a YouTube thumbnail for the video titled: "{{{videoTopic}}}".
 Your design MUST use the predefined color scheme ("{{{colorScheme}}}"), font pairing ("{{{fontPairing}}}"), and visual style ("{{{style}}}") for inspiration.
@@ -74,11 +73,10 @@ const generateThumbnailFlow = ai.defineFlow(
     outputSchema: GenerateThumbnailOutputSchema,
   },
   async input => {
-    const basePromptText = `You are an expert YouTube thumbnail designer.
-
-ABSOLUTELY CRITICAL INSTRUCTIONS REGARDING TEXT AND PARAMETERS:
-1.  **NO PARAMETER TEXT ON IMAGE:** The "Color Scheme" ("${input.colorScheme}"), "Font Pairing" ("${input.fontPairing}"), and "Style" ("${input.style}") parameters you are given are strictly for INSPIRING the VISUAL DESIGN of the thumbnail. Their names, descriptions, or any related text MUST NOT, under any circumstances, appear as written text on the generated image. These parameters guide the *look and feel*, NOT the text content.
-2.  **VIDEO TOPIC IS THE ONLY SOURCE OF TEXT:** The ONLY text that is allowed to be written on the thumbnail image MUST be a very short, impactful phrase or keywords derived directly and exclusively from the provided Video Topic: "${input.videoTopic}". Do NOT write any other words, phrases, or sentences on the image.
+    const basePromptText = `!!! EXTREMELY IMPORTANT RULES FOR TEXT ON THE THUMBNAIL !!!
+1.  **NO DESCRIPTIVE TEXT FROM PARAMETERS:** The "Color Scheme" ("${input.colorScheme}"), "Font Pairing" ("${input.fontPairing}"), and "Style" ("${input.style}") parameters are for VISUAL INSPIRATION ONLY. Their names or any descriptive text about them MUST NOT appear on the image.
+2.  **ONLY VIDEO TOPIC TEXT:** The ONLY text allowed on the thumbnail image is a very short, impactful phrase derived SOLELY from the Video Topic: "${input.videoTopic}". Do NOT include any other words, numbers, or characters.
+3.  **VIOLATION CHECK:** Before outputting the image, double-check that NO unintended text (like parameter names or parts of these instructions) has been accidentally included on the image. Only text from "${input.videoTopic}" is permitted.
 
 Create a YouTube thumbnail for the video titled: "${input.videoTopic}".
 Your design MUST use the predefined color scheme ("${input.colorScheme}"), font pairing ("${input.fontPairing}"), and visual style ("${input.style}") for inspiration.
@@ -104,10 +102,10 @@ There must be NO black bars, NO cropping by the AI, and NO padding within the ge
     if (input.uploadedImageDataUri) {
       imageGenerationPromptConfig = [
         { media: { url: input.uploadedImageDataUri } },
-        { text: `${basePromptText}\n\nADDITIONAL EMPHASIS (User Image Provided):\nThe user-uploaded image (first media item) is paramount. Ensure it is the absolute primary visual foundation. All other elements support it. REMEMBER ALL CRITICAL TEXT AND PARAMETER USAGE RULES.${finalResolutionInstruction}` }
+        { text: `${basePromptText}\n\nADDITIONAL EMPHASIS (User Image Provided):\nThe user-uploaded image (first media item) is paramount. Ensure it is the absolute primary visual foundation. All other elements support it. REMEMBER ALL EXTREMELY IMPORTANT TEXT RULES AND PARAMETER USAGE RULES.${finalResolutionInstruction}` }
       ];
     } else {
-      imageGenerationPromptConfig = `${basePromptText}\n\nADDITIONAL EMPHASIS (No User Image): Focus on generating compelling visuals directly related to "${input.videoTopic}". REMEMBER ALL CRITICAL TEXT AND PARAMETER USAGE RULES.${finalResolutionInstruction}`;
+      imageGenerationPromptConfig = `${basePromptText}\n\nADDITIONAL EMPHASIS (No User Image): Focus on generating compelling visuals directly related to "${input.videoTopic}". REMEMBER ALL EXTREMELY IMPORTANT TEXT RULES AND PARAMETER USAGE RULES.${finalResolutionInstruction}`;
     }
 
     const {media} = await ai.generate({
@@ -120,4 +118,6 @@ There must be NO black bars, NO cropping by the AI, and NO padding within the ge
     return {thumbnailDataUri: media.url!};
   }
 );
+    
+
     
