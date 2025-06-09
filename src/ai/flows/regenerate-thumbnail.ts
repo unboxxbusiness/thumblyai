@@ -51,7 +51,7 @@ You will be given a previous thumbnail and parameters. Your task is to regenerat
 - **Significantly Increased Click-Worthiness & Modern Appeal:** Elevate the design to be highly compelling by adopting cutting-edge YouTube thumbnail strategies for maximum engagement and a modern, professional look (e.g., Ali Abdaal). This involves dramatically enhancing visual impact (e.g., more dynamic compositions, intriguing elements, clear subject focus, or emotion-driven imagery if appropriate), making text even bolder, clearer, and more prominent, and optimizing colors/contrast for immediate attention, all while improving relevance and directness to the video topic.
 - **Professional:** Ensure a polished, high-quality finish.
 - **Clearer & More Impactful:** Improve text legibility, color contrast, and overall composition.
-- **Aspect Ratio & Resolution:** The regenerated image should inherently be high resolution and suitable for a 1920x1080 YouTube thumbnail (16:9 aspect ratio).
+- **Aspect Ratio & Resolution:** The regenerated image MUST inherently be high resolution, specifically targeting 1920 pixels wide by 1080 pixels tall (a 16:9 aspect ratio).
 
 Consider the following inputs:
 Video Topic: {{{videoTopic}}}
@@ -74,7 +74,7 @@ IMPORTANT - PARAMETER USAGE & TEXT RESTRICTIONS (ABSOLUTELY CRITICAL FOR REGENER
 Recap for Text: The text on the regenerated thumbnail must be concise, taken ONLY from the video topic. All other parameters guide the visual style, not the text content.
 
 Analyze the provided image(s) and apply your expertise to enhance the design. This might involve adjusting layout, typography, color balance, or adding subtle graphic elements to increase engagement, while adhering to the specified parameters. The goal is a noticeable improvement towards a professional, modern aesthetic with clear, bold text (derived *only*from the Video Topic) and a clean layout.
-The new thumbnail should be high resolution (suitable for 1920x1080, 16:9 aspect ratio) and returned as a data URI.
+The new thumbnail MUST be high resolution, targeting 1920x1080 pixels (16:9 aspect ratio), and returned as a data URI.
   `,
 });
 
@@ -94,7 +94,7 @@ Focus on:
 - **Professional Composition:** Ensure any human figures or key elements are well-composed and look professional.
 - Typographic Style: Apply a font style inspired by the font pairing parameter: "${input.fontPairing}".
 - Overall Aesthetic: Adhere to the style parameter: "${input.style}".
-- Aspect Ratio & Resolution: The regenerated image must inherently be high resolution and perfectly suitable for a 1920x1080 YouTube thumbnail (16:9 aspect ratio).
+- Aspect Ratio & Resolution: The regenerated image MUST inherently be high resolution, specifically targeting 1920 pixels wide by 1080 pixels tall (a 16:9 aspect ratio).
 
 IMPORTANT - PARAMETER USAGE & TEXT RESTRICTIONS (ABSOLUTELY CRITICAL FOR REGENERATION):
 1. Parameter Influence, NOT Text: The selected Color Scheme ("${input.colorScheme}"), Font Pairing ("${input.fontPairing}"), and Style ("${input.style}") are for INSPIRATION and GUIDANCE of the visual design ONLY. Their names or descriptions (e.g., "Bright & Punchy", "Modern Sans Serif Duo") MUST NOT appear as text anywhere on the regenerated thumbnail image.
@@ -112,9 +112,9 @@ Aim for a clear upgrade, featuring strong, legible text (derived *only* from "${
 
     if (input.uploadedImageDataUri) {
       promptParts.push({ media: {url: input.uploadedImageDataUri }}); // New uploaded image is the second media item, if present.
-      regenerationInstructionsText += `\n\nCRITICAL INSTRUCTION FOR REGENERATION (NEW USER IMAGE PROVIDED):\n- The FIRST media item in this prompt is the *previous thumbnail*.\n- The SECOND media item in this prompt is a *newly uploaded image* by the user.\nYOUR ABSOLUTE TOP PRIORITY is to use the NEWLY UPLOADED IMAGE (the second media item) as the dominant visual foundation for the regenerated thumbnail. It must be the central focus or main background. You may draw MINOR inspiration or subtle elements from the PREVIOUS THUMBNAIL (the first media item) ONLY if they directly enhance and integrate seamlessly with the new uploaded image and fit the overall design goals of clarity, modernity, and professionalism.\nThe final design MUST heavily feature and be built around the new user-uploaded image. REMEMBER THE CRITICAL TEXT AND PARAMETER USAGE RULES ABOVE: Parameter names (like "${input.colorScheme}") are for design guidance only and MUST NOT be written on the image. Text on the image MUST come ONLY from the Video Topic ("${input.videoTopic}").`;
+      regenerationInstructionsText += `\n\nCRITICAL INSTRUCTION FOR REGENERATION (NEW USER IMAGE PROVIDED):\n- The FIRST media item in this prompt is the *previous thumbnail*.\n- The SECOND media item in this prompt is a *newly uploaded image* by the user.\nYOUR ABSOLUTE TOP PRIORITY is to use the NEWLY UPLOADED IMAGE (the second media item) as the dominant visual foundation for the regenerated thumbnail. It must be the central focus or main background. You may draw MINOR inspiration or subtle elements from the PREVIOUS THUMBNAIL (the first media item) ONLY if they directly enhance and integrate seamlessly with the new uploaded image and fit the overall design goals of clarity, modernity, and professionalism.\nThe final design MUST heavily feature and be built around the new user-uploaded image. REMEMBER THE CRITICAL TEXT AND PARAMETER USAGE RULES ABOVE: Parameter names (like "${input.colorScheme}") are for design guidance only and MUST NOT be written on the image. Text on the image MUST come ONLY from the Video Topic ("${input.videoTopic}"). The final image MUST target a resolution of 1920x1080 pixels.`;
     } else {
-      regenerationInstructionsText += `\n\nINSTRUCTION FOR REGENERATION (NO NEW USER IMAGE):\n- The media item provided in this prompt is the *previous thumbnail*.\nYour task is to significantly refine this design to make it better, adhering to all the quality guidelines mentioned above. REMEMBER THE CRITICAL TEXT AND PARAMETER USAGE RULES ABOVE: Parameter names (like "${input.colorScheme}") are for design guidance only and MUST NOT be written on the image. Text on the image MUST come ONLY from the Video Topic ("${input.videoTopic}").`;
+      regenerationInstructionsText += `\n\nINSTRUCTION FOR REGENERATION (NO NEW USER IMAGE):\n- The media item provided in this prompt is the *previous thumbnail*.\nYour task is to significantly refine this design to make it better, adhering to all the quality guidelines mentioned above. REMEMBER THE CRITICAL TEXT AND PARAMETER USAGE RULES ABOVE: Parameter names (like "${input.colorScheme}") are for design guidance only and MUST NOT be written on the image. Text on the image MUST come ONLY from the Video Topic ("${input.videoTopic}"). Ensure the regenerated image specifically targets 1920x1080 pixels (16:9 aspect ratio).`;
     }
     promptParts.push({text: regenerationInstructionsText});
 

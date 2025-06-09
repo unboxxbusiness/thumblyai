@@ -45,7 +45,7 @@ Your goal is to generate a thumbnail that is:
 - **Professional:** Looks polished and high-quality.
 - **Highly Engaging & Click-Worthy:** Specifically designed to maximize click-through rates by using proven, modern YouTube thumbnail strategies. This includes creating visually striking, high-contrast imagery, potentially with intriguing elements, dynamic compositions, or clear human subjects/expressions that spark curiosity, while remaining 100% true to the video topic.
 - **Relevant:** Accurately reflects the video's content.
-- **Aspect Ratio & Resolution:** The generated image should inherently be high resolution and suitable for a 1920x1080 YouTube thumbnail (16:9 aspect ratio).
+- **Aspect Ratio & Resolution:** The generated image MUST inherently be high resolution, specifically targeting 1920 pixels wide by 1080 pixels tall (a 16:9 aspect ratio).
 
 Video Topic: {{{videoTopic}}}
 Color Scheme (for design guidance): {{{colorScheme}}}
@@ -63,7 +63,7 @@ IMPORTANT - PARAMETER USAGE & TEXT RESTRICTIONS (ABSOLUTELY CRITICAL):
 Recap for Text: The text on the thumbnail must be concise, taken ONLY from the video topic. All other parameters guide the visual style, not the text content.
 
 Incorporate these elements into a compelling thumbnail design. The primary text (derived *only* from the video topic) should be prominent. Avoid clutter. Focus on a single, clear message or visual.
-The thumbnail should be high resolution (suitable for 1920x1080, 16:9 aspect ratio) and returned as a data URI.
+The thumbnail MUST be high resolution, targeting 1920x1080 pixels (16:9 aspect ratio), and returned as a data URI.
   `,
 });
 
@@ -84,7 +84,7 @@ The thumbnail must be:
 - Relevant: Accurately reflects the video's content.
 - Typographic Style: Apply a font style inspired by the font pairing parameter: "${input.fontPairing}".
 - Overall Aesthetic: Adhere to the style parameter: "${input.style}".
-- Aspect Ratio & Resolution: The generated image must inherently be high resolution and perfectly suitable for a 1920x1080 YouTube thumbnail (16:9 aspect ratio).
+- Aspect Ratio & Resolution: The generated image MUST inherently be high resolution, specifically targeting 1920 pixels wide by 1080 pixels tall (a 16:9 aspect ratio).
 
 IMPORTANT - PARAMETER USAGE & TEXT RESTRICTIONS (ABSOLUTELY CRITICAL):
 1. Parameter Influence, NOT Text: The selected Color Scheme ("${input.colorScheme}"), Font Pairing ("${input.fontPairing}"), and Style ("${input.style}") are for INSPIRATION and GUIDANCE of the visual design ONLY. Their names or descriptions (e.g., "Bright & Punchy", "Modern Sans Serif Duo") MUST NOT appear as text anywhere on the generated thumbnail image.
@@ -100,10 +100,10 @@ Prioritize a clean aesthetic with strong typography. Ensure any human figures (i
     if (input.uploadedImageDataUri) {
       imageGenerationPromptConfig = [
         { media: { url: input.uploadedImageDataUri } },
-        { text: `CRITICAL INSTRUCTION (User Image Provided):\nA user-uploaded image is provided as the first media item in this prompt. YOU MUST use this uploaded image as the_ABSOLUTE_PRIMARY_VISUAL_FOUNDATION for the thumbnail. All other design elements (text, style, colors, composition) MUST be applied *to, around, or in direct support of* this user image. It should be the central focus or the main background. Ensure it integrates seamlessly and professionally.\n\n${basePromptText}\n\nFurther details for using the uploaded image: Integrate it naturally as a key component or background for the thumbnail, complementing the Video Topic ("${input.videoTopic}"). REMEMBER THE CRITICAL TEXT AND PARAMETER USAGE RULES ABOVE: Parameter names (like "${input.colorScheme}") are for design guidance only and MUST NOT be written on the image. Text on the image MUST come ONLY from the Video Topic ("${input.videoTopic}").` }
+        { text: `CRITICAL INSTRUCTION (User Image Provided):\nA user-uploaded image is provided as the first media item in this prompt. YOU MUST use this uploaded image as the_ABSOLUTE_PRIMARY_VISUAL_FOUNDATION for the thumbnail. All other design elements (text, style, colors, composition) MUST be applied *to, around, or in direct support of* this user image. It should be the central focus or the main background. Ensure it integrates seamlessly and professionally.\n\n${basePromptText}\n\nFurther details for using the uploaded image: Integrate it naturally as a key component or background for the thumbnail, complementing the Video Topic ("${input.videoTopic}"). REMEMBER THE CRITICAL TEXT AND PARAMETER USAGE RULES ABOVE: Parameter names (like "${input.colorScheme}") are for design guidance only and MUST NOT be written on the image. Text on the image MUST come ONLY from the Video Topic ("${input.videoTopic}"). The final image MUST target a resolution of 1920x1080 pixels.` }
       ];
     } else {
-      imageGenerationPromptConfig = `${basePromptText}\n\nINSTRUCTION (No User Image): Generate all visual elements for the thumbnail based on the Video Topic ("${input.videoTopic}"). REMEMBER THE CRITICAL TEXT AND PARAMETER USAGE RULES ABOVE: Parameter names (like "${input.colorScheme}") are for design guidance only and MUST NOT be written on the image. Text on the image MUST come ONLY from the Video Topic ("${input.videoTopic}"). Ensure the generated image is high resolution, 16:9 aspect ratio.`;
+      imageGenerationPromptConfig = `${basePromptText}\n\nINSTRUCTION (No User Image): Generate all visual elements for the thumbnail based on the Video Topic ("${input.videoTopic}"). REMEMBER THE CRITICAL TEXT AND PARAMETER USAGE RULES ABOVE: Parameter names (like "${input.colorScheme}") are for design guidance only and MUST NOT be written on the image. Text on the image MUST come ONLY from the Video Topic ("${input.videoTopic}"). Ensure the generated image is high resolution, specifically targeting 1920x1080 pixels (16:9 aspect ratio).`;
     }
 
     const {media} = await ai.generate({
