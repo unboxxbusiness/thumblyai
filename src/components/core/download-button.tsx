@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -35,9 +36,34 @@ export default function DownloadButton({
         return;
       }
 
-      // Draw image maintaining aspect ratio and covering canvas
-      // This example simply stretches, but more sophisticated logic could be added for cover/contain
-      ctx.drawImage(img, 0, 0, resolution.width, resolution.height);
+      // Calculate aspect ratios
+      const imgAspectRatio = img.width / img.height;
+      const canvasAspectRatio = canvas.width / canvas.height;
+      let sx, sy, sWidth, sHeight;
+
+      // "Cover" logic: crop image to fill canvas
+      if (imgAspectRatio > canvasAspectRatio) {
+        // Image is wider than canvas aspect ratio (needs horizontal cropping)
+        sHeight = img.height;
+        sWidth = sHeight * canvasAspectRatio;
+        sx = (img.width - sWidth) / 2;
+        sy = 0;
+      } else {
+        // Image is taller than or same aspect ratio as canvas (needs vertical cropping or no cropping)
+        sWidth = img.width;
+        sHeight = sWidth / canvasAspectRatio; // This might be taller than img.height if img is much narrower
+        if (sHeight > img.height) { // Recalculate if sHeight exceeds original image height
+            sHeight = img.height;
+            sWidth = sHeight * canvasAspectRatio;
+            sx = (img.width - sWidth) / 2; // Center horizontally
+            sy = 0;
+        } else {
+            sx = 0;
+            sy = (img.height - sHeight) / 2;
+        }
+      }
+      
+      ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, canvas.width, canvas.height);
       
       try {
         const dataUrl = canvas.toDataURL("image/png");
