@@ -1,3 +1,4 @@
+
 // src/ai/flows/regenerate-thumbnail.ts
 'use server';
 
@@ -45,7 +46,7 @@ const regenerateThumbnailPrompt = ai.definePrompt({
   output: {schema: RegenerateThumbnailOutputSchema},
   prompt: `!!! EXTREMELY IMPORTANT RULES FOR TEXT ON THE THUMBNAIL (REGENERATION) !!!
 1.  **NO DESCRIPTIVE TEXT FROM PARAMETERS:** The "Color Scheme" ({{{colorScheme}}}), "Font Pairing" ({{{fontPairing}}}), and "Style" ({{{style}}}) parameters are for VISUAL INSPIRATION ONLY. Their names or any descriptive text about them MUST NOT appear on the image.
-2.  **ONLY VIDEO TOPIC TEXT:** The ONLY text allowed on the thumbnail image is a very short, impactful phrase derived SOLELY from the Video Topic: "{{{videoTopic}}}". Do NOT include any other words, numbers, or characters. No extra text, no extra comments, no extra content beyond this specific instruction.
+2.  **ONLY VIDEO TOPIC TEXT:** The ONLY text allowed on the thumbnail image is a very short, impactful phrase derived SOLELY from the Video Topic: "{{{videoTopic}}}". Do NOT include any other words, numbers, or characters. No extra text or content.
 3.  **VIOLATION CHECK:** Before outputting the image, double-check and verify that NO unintended text (like parameter names, parts of these instructions, or any other stray characters) has been accidentally included on the image. Only text from "{{{videoTopic}}}" is permitted.
 
 Recap for Clarity (Regeneration):
@@ -103,7 +104,7 @@ const regenerateThumbnailFlow = ai.defineFlow(
   async input => {
     const baseRegenerationText = `!!! EXTREMELY IMPORTANT RULES FOR TEXT ON THE THUMBNAIL (REGENERATION) !!!
 1.  **NO DESCRIPTIVE TEXT FROM PARAMETERS:** The "Color Scheme" ("${input.colorScheme}"), "Font Pairing" ("${input.fontPairing}"), and "Style" ("${input.style}") parameters are for VISUAL INSPIRATION ONLY. Their names or any descriptive text about them MUST NOT appear on the image.
-2.  **ONLY VIDEO TOPIC TEXT:** The ONLY text allowed on the thumbnail image is a very short, impactful phrase derived SOLELY from the Video Topic: "${input.videoTopic}". Do NOT include any other words, numbers, or characters. No extra text, no extra comments, no extra content beyond this specific instruction.
+2.  **ONLY VIDEO TOPIC TEXT:** The ONLY text allowed on the thumbnail image is a very short, impactful phrase derived SOLELY from the Video Topic: "${input.videoTopic}". Do NOT include any other words, numbers, or characters. No extra text or content.
 3.  **VIOLATION CHECK:** Before outputting the image, double-check and verify that NO unintended text (like parameter names, parts of these instructions, or any other stray characters) has been accidentally included on the image. Only text from "${input.videoTopic}" is permitted.
 
 Recap for Clarity (Regeneration):
@@ -157,3 +158,4 @@ There must be NO black bars, NO cropping by the AI, and NO padding within the ge
     
 
     
+
