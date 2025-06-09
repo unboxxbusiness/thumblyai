@@ -32,6 +32,8 @@ export async function generateThumbnail(input: GenerateThumbnailInput): Promise<
   return generateThumbnailFlow(input);
 }
 
+// This prompt definition is kept for potential future use or direct invocation,
+// but the generateThumbnailFlow currently constructs its own prompt for ai.generate.
 const prompt = ai.definePrompt({
   name: 'generateThumbnailPrompt',
   input: {schema: GenerateThumbnailInputSchema},
@@ -45,6 +47,7 @@ Your goal is to generate a thumbnail that is:
 - **Professional:** Looks polished and high-quality.
 - **Engaging:** Designed to maximize click-through rates.
 - **Relevant:** Accurately reflects the video's content.
+- **Aspect Ratio & Resolution:** The generated image should inherently be high resolution and suitable for a 1920x1080 YouTube thumbnail (16:9 aspect ratio).
 
 Video Topic: {{{videoTopic}}}
 Color Scheme: {{{colorScheme}}}
@@ -52,13 +55,15 @@ Font Pairing: {{{fontPairing}}}
 Style: {{{style}}}
 {{#if uploadedImageDataUri}}
 User Provided Image: {{media url=uploadedImageDataUri}}
-Instruction: Incorporate this user-provided image thoughtfully into the thumbnail design. It could be a background, a main subject, or an element within the composition. Ensure it blends well with the overall style, topic, color scheme, and font pairing. The text on the thumbnail should be *only* the most essential part of the video topic, keeping it concise.
+Instruction for User Image: YOU MUST prominently feature and integrate this user-provided image into the thumbnail design. It should be the main subject or background. Design all other elements (text, colors, style) to complement this image. The text on the thumbnail should be *only* the most essential part of the video topic, keeping it concise.
 {{/if}}
 
-IMPORTANT: Do NOT include the literal names of the color scheme, font pairing, or style (e.g., 'Bright & Punchy', 'Modern Sans Serif Duo') as text in the thumbnail image itself. Instead, *use* these selections to *guide* the visual design choices like color palettes, font choices, and overall aesthetic. The text on the thumbnail should be derived *only* from the 'Video Topic'.
+IMPORTANT (Applies to all generations):
+1.  **Text Content:** The text on the thumbnail should be derived *only* from the 'Video Topic' ({{{videoTopic}}}). Keep it very concise and impactful. Do NOT add any extra words or sentences.
+2.  **Parameter Usage:** Do NOT include the literal names of the color scheme, font pairing, or style (e.g., 'Bright & Punchy', 'Modern Sans Serif Duo') as text in the thumbnail image itself. Instead, *use* these selections to *guide* the visual design choices like color palettes, font choices, and overall aesthetic.
 
-Incorporate these elements into a compelling thumbnail design. The primary text (derived *only* from the video topic) should be prominent. Avoid clutter and any extraneous words or sentences. Focus on a single, clear message or visual.
-The thumbnail should be high resolution, suitable for a YouTube thumbnail (16:9 aspect ratio), and returned as a data URI.
+Incorporate these elements into a compelling thumbnail design. The primary text (derived *only* from the video topic) should be prominent. Avoid clutter. Focus on a single, clear message or visual.
+The thumbnail should be high resolution (suitable for 1920x1080, 16:9 aspect ratio) and returned as a data URI.
   `,
 });
 
@@ -72,28 +77,33 @@ const generateThumbnailFlow = ai.defineFlow(
     const basePromptText = `Generate a high-quality, modern YouTube thumbnail, in the style of top creators like Ali Abdaal.
 The thumbnail must be:
 - Visually Striking: Clean, minimalist, yet eye-catching.
-- Clear & Legible: Feature bold, easy-to-read text. The text on the thumbnail should *only* be the most essential part of the video topic: "${input.videoTopic}", keeping it concise and impactful.
+- Clear & Legible: Feature bold, easy-to-read text.
 - High Contrast: Use colors effectively for readability and visual pop, guided by the color scheme: "${input.colorScheme}".
 - Professional: Look polished and high-quality.
 - Engaging: Designed to maximize click-through rates.
 - Relevant: Accurately reflects the video's content.
 - Typographic Style: Apply a font style inspired by "${input.fontPairing}".
 - Overall Aesthetic: Adhere to the style: "${input.style}".
+- Aspect Ratio & Resolution: The generated image must inherently be high resolution and perfectly suitable for a 1920x1080 YouTube thumbnail (16:9 aspect ratio).
 
-IMPORTANT: Do NOT include the literal names of the color scheme, font pairing, or style (e.g., do not write 'Bright & Punchy' or 'Modern Sans Serif Duo' as text on the thumbnail image itself). Instead, *use* these selections to *guide* the visual design choices. The text on the thumbnail should be derived *only* from the 'Video Topic'.
+IMPORTANT - TEXT CONTENT:
+The text on the thumbnail MUST be derived *only* from the most essential part of the video topic: "${input.videoTopic}". Keep it extremely concise and impactful. Do NOT add any extra words, phrases, or sentences beyond what is essential from the topic.
 
-The text (derived *only* from "${input.videoTopic}") should be prominent. Avoid visual clutter and any extraneous words or sentences. Focus on a single, clear message.
-Prioritize a clean aesthetic with strong typography. Ensure any human figures (if generated or present in an uploaded image) are well-composed and look professional. The generated image should be high resolution, ideally suitable for a 1920x1080 YouTube thumbnail (16:9 aspect ratio).`;
+IMPORTANT - PARAMETER USAGE:
+Do NOT include the literal names of the color scheme, font pairing, or style (e.g., do not write 'Bright & Punchy' or 'Modern Sans Serif Duo' as text on the thumbnail image itself). Instead, *use* these selections to *guide* all visual design choices.
+
+The text (derived *only* from "${input.videoTopic}") should be prominent. Avoid visual clutter. Focus on a single, clear message.
+Prioritize a clean aesthetic with strong typography. Ensure any human figures (if generated or present in an uploaded image) are well-composed and look professional.`;
 
     let imageGenerationPromptConfig: string | Array<Record<string, any>>;
 
     if (input.uploadedImageDataUri) {
       imageGenerationPromptConfig = [
         { media: { url: input.uploadedImageDataUri } },
-        { text: `${basePromptText}\n\nINSTRUCTION (User Image Provided): An image has been provided by the user (see context image above). Please use this image as a key component or background for the thumbnail. Integrate it naturally with the Video Topic ("${input.videoTopic}"), Color Scheme ("${input.colorScheme}"), Font Pairing ("${input.fontPairing}"), and Style ("${input.style}") specified. The text on the thumbnail should be *only* the most essential part of the video topic, keeping it concise.` }
+        { text: `CRITICAL INSTRUCTION (User Image Provided):\nA user-uploaded image is provided as the first media item in this prompt. YOU MUST use this uploaded image as the_ABSOLUTE_PRIMARY_VISUAL_FOUNDATION for the thumbnail. All other design elements (text, style, colors, composition) MUST be applied *to, around, or in direct support of* this user image. It should be the central focus or the main background. Ensure it integrates seamlessly and professionally.\n\n${basePromptText}\n\nFurther details for using the uploaded image: Integrate it naturally as a key component or background for the thumbnail, complementing the Video Topic ("${input.videoTopic}"), Color Scheme ("${input.colorScheme}"), Font Pairing ("${input.fontPairing}"), and Style ("${input.style}"). Remember, the text on the thumbnail should be *only* the most essential part of the video topic, very concise.` }
       ];
     } else {
-      imageGenerationPromptConfig = `${basePromptText}\n\nINSTRUCTION (No User Image): Generate all visual elements for the thumbnail based on the Video Topic ("${input.videoTopic}"), Color Scheme ("${input.colorScheme}"), Font Pairing ("${input.fontPairing}"), and Style ("${input.style}"). The text on the thumbnail should be *only* the most essential part of the video topic, keeping it concise.`;
+      imageGenerationPromptConfig = `${basePromptText}\n\nINSTRUCTION (No User Image): Generate all visual elements for the thumbnail based on the Video Topic ("${input.videoTopic}"), Color Scheme ("${input.colorScheme}"), Font Pairing ("${input.fontPairing}"), and Style ("${input.style}"). The text on the thumbnail should be *only* the most essential part of the video topic, very concise. Ensure the generated image is high resolution, 16:9 aspect ratio.`;
     }
 
     const {media} = await ai.generate({
@@ -101,9 +111,10 @@ Prioritize a clean aesthetic with strong typography. Ensure any human figures (i
       prompt: imageGenerationPromptConfig,
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
+        // Explicitly set number of candidates to 1 for image generation if not default
+        // numOutputCandidates: 1, // Or whatever the API supports if needed
       },
     });
     return {thumbnailDataUri: media.url!};
   }
 );
-
