@@ -1,3 +1,4 @@
+
 "use server";
 
 import { generateThumbnail as generateThumbnailFlow, type GenerateThumbnailInput, type GenerateThumbnailOutput } from "@/ai/flows/generate-thumbnail";
@@ -9,14 +10,16 @@ const GenerateInputSchema = z.object({
   colorScheme: z.string(),
   fontPairing: z.string(),
   style: z.string(),
+  uploadedImageDataUri: z.string().url("Invalid uploaded image data URI").optional(),
 });
 
 const RegenerateInputSchema = GenerateInputSchema.extend({
   previousThumbnail: z.string().url("Invalid previous thumbnail data URI"),
+  // uploadedImageDataUri is inherited and remains optional
 });
 
 export async function generateThumbnailAction(
-  data: GenerateThumbnailInput
+  data: z.infer<typeof GenerateInputSchema> // Use inferred type for data
 ): Promise<GenerateThumbnailOutput | { error: string }> {
   const validatedData = GenerateInputSchema.safeParse(data);
   if (!validatedData.success) {
@@ -24,18 +27,17 @@ export async function generateThumbnailAction(
   }
 
   try {
-    // The AI flow expects specific input names as per its schema, map if necessary.
-    // For this example, we assume the names match.
     const result = await generateThumbnailFlow(validatedData.data);
     return result;
   } catch (e) {
     console.error("Error generating thumbnail:", e);
-    return { error: "Failed to generate thumbnail. Please try again." };
+    const errorMessage = e instanceof Error ? e.message : "An unknown error occurred.";
+    return { error: `Failed to generate thumbnail. ${errorMessage}` };
   }
 }
 
 export async function regenerateThumbnailAction(
-  data: RegenerateThumbnailInput
+  data: z.infer<typeof RegenerateInputSchema> // Use inferred type for data
 ): Promise<RegenerateThumbnailOutput | { error: string }> {
   const validatedData = RegenerateInputSchema.safeParse(data);
   if (!validatedData.success) {
@@ -47,6 +49,7 @@ export async function regenerateThumbnailAction(
     return result;
   } catch (e) {
     console.error("Error regenerating thumbnail:", e);
-    return { error: "Failed to regenerate thumbnail. Please try again." };
+    const errorMessage = e instanceof Error ? e.message : "An unknown error occurred.";
+    return { error: `Failed to regenerate thumbnail. ${errorMessage}` };
   }
 }

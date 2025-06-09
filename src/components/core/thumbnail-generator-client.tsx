@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useTransition } from "react";
@@ -9,7 +10,8 @@ import { toast } from "@/hooks/use-toast";
 import ThumbnailForm from "./thumbnail-form";
 import ThumbnailDisplay from "./thumbnail-display";
 import { generateThumbnailAction, regenerateThumbnailAction } from "@/app/actions";
-import type { GenerateThumbnailInput } from "@/ai/flows/generate-thumbnail";
+// The actual GenerateThumbnailInput type comes from the AI flow, but for form values we define it here.
+// import type { GenerateThumbnailInput } from "@/ai/flows/generate-thumbnail"; 
 import { COLOR_SCHEMES, FONT_PAIRINGS, STYLES } from "@/lib/constants";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -18,6 +20,7 @@ const formSchema = z.object({
   colorScheme: z.string().min(1, "Please select a color scheme."),
   fontPairing: z.string().min(1, "Please select a font pairing."),
   style: z.string().min(1, "Please select a style."),
+  uploadedImageDataUri: z.string().url("Invalid image data URI format.").optional().or(z.literal('')), // Allow empty string from cleared input
 });
 
 type ThumbnailFormValues = z.infer<typeof formSchema>;
@@ -35,6 +38,7 @@ export default function ThumbnailGeneratorClient() {
       colorScheme: COLOR_SCHEMES[0],
       fontPairing: FONT_PAIRINGS[0],
       style: STYLES[0],
+      uploadedImageDataUri: "",
     },
   });
   const { watch } = formMethods;
@@ -43,7 +47,12 @@ export default function ThumbnailGeneratorClient() {
   const handleGenerate = async (data: ThumbnailFormValues) => {
     setError(null);
     startGeneratingTransition(async () => {
-      const result = await generateThumbnailAction(data);
+      // Ensure empty string is treated as undefined for the backend
+      const payload = {
+        ...data,
+        uploadedImageDataUri: data.uploadedImageDataUri || undefined,
+      };
+      const result = await generateThumbnailAction(payload);
       if ("error" in result) {
         setError(result.error);
         setGeneratedThumbnail(null);
@@ -63,13 +72,14 @@ export default function ThumbnailGeneratorClient() {
     setError(null);
     const currentFormValues = formMethods.getValues();
     startRegeneratingTransition(async () => {
-      const result = await regenerateThumbnailAction({
+      const payload = {
         ...currentFormValues,
         previousThumbnail: generatedThumbnail,
-      });
+        uploadedImageDataUri: currentFormValues.uploadedImageDataUri || undefined,
+      };
+      const result = await regenerateThumbnailAction(payload);
       if ("error" in result) {
         setError(result.error);
-        // Keep the old thumbnail visible but show error
         toast({ title: "Regeneration Failed", description: result.error, variant: "destructive" });
       } else {
         setGeneratedThumbnail(result.thumbnail);
@@ -85,7 +95,7 @@ export default function ThumbnailGeneratorClient() {
           Create <span className="text-primary">Stunning</span> Thumbnails with AI
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-          Describe your video, pick your style, and let Thumbly Ai craft the perfect thumbnail to boost your clicks.
+          Describe your video, pick your style, (optionally) upload an image, and let Thumbly Ai craft the perfect thumbnail.
         </p>
       </section>
 
@@ -93,7 +103,7 @@ export default function ThumbnailGeneratorClient() {
         <Card className="shadow-xl">
           <CardHeader>
             <CardTitle className="text-2xl font-headline">Thumbnail Settings</CardTitle>
-            <CardDescription>Tell us about your video to get started.</CardDescription>
+            <CardDescription>Tell us about your video to get started. You can also upload an image to include.</CardDescription>
           </CardHeader>
           <CardContent>
             <ThumbnailForm onSubmit={handleGenerate} isGenerating={isGenerating} />

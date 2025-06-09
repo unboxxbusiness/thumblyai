@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Control } from "react-hook-form";
@@ -8,16 +9,21 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { COLOR_SCHEMES, FONT_PAIRINGS, STYLES } from "@/lib/constants";
-import { Loader2 } from "lucide-react";
-import type { GenerateThumbnailInput } from "@/ai/flows/generate-thumbnail";
+import { Loader2, XCircle } from "lucide-react";
+import type { GenerateThumbnailInput } from "@/ai/flows/generate-thumbnail"; // Assuming this type will be updated or is general enough
+
+// Extend this type if it's strictly typed and doesn't include uploadedImageDataUri
+interface ThumbnailFormSchema extends GenerateThumbnailInput {
+  uploadedImageDataUri?: string;
+}
 
 interface ThumbnailFormProps {
-  onSubmit: (data: GenerateThumbnailInput) => void;
+  onSubmit: (data: ThumbnailFormSchema) => void;
   isGenerating: boolean;
 }
 
 export default function ThumbnailForm({ onSubmit, isGenerating }: ThumbnailFormProps) {
-  const { control, handleSubmit, formState: { errors } } = useFormContext<GenerateThumbnailInput>();
+  const { control, handleSubmit, formState: { errors }, setValue } = useFormContext<ThumbnailFormSchema>();
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -30,6 +36,59 @@ export default function ThumbnailForm({ onSubmit, isGenerating }: ThumbnailFormP
             <FormControl>
               <Input id="videoTopic" placeholder="e.g., 'How to make a great YouTube thumbnail'" {...field} />
             </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
+        name="uploadedImageDataUri"
+        render={({ field: { onChange, value } }) => (
+          <FormItem>
+            <FormLabel htmlFor="uploadedImage">Upload Image (Optional)</FormLabel>
+            <FormControl>
+              <Input
+                id="uploadedImage"
+                type="file"
+                accept="image/png, image/jpeg, image/webp"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      onChange(reader.result as string);
+                    };
+                    reader.readAsDataURL(file);
+                  } else {
+                    onChange(undefined);
+                  }
+                  // Reset file input value to allow re-uploading the same file if cleared
+                  if (e.target) e.target.value = '';
+                }}
+                className="block w-full text-sm text-slate-500
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-full file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-primary/10 file:text-primary
+                  hover:file:bg-primary/20"
+              />
+            </FormControl>
+            {value && (
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-sm text-muted-foreground truncate max-w-[200px]">Image selected</span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 text-muted-foreground hover:text-destructive"
+                  onClick={() => onChange(undefined)}
+                >
+                  <XCircle className="h-4 w-4" />
+                  <span className="sr-only">Clear uploaded image</span>
+                </Button>
+              </div>
+            )}
             <FormMessage />
           </FormItem>
         )}
