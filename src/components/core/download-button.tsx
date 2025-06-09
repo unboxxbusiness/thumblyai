@@ -36,33 +36,30 @@ export default function DownloadButton({
         return;
       }
 
-      // Calculate aspect ratios
       const imgAspectRatio = img.width / img.height;
       const canvasAspectRatio = canvas.width / canvas.height;
-      let sx, sy, sWidth, sHeight;
-
-      // "Cover" logic: crop image to fill canvas
-      if (imgAspectRatio > canvasAspectRatio) {
-        // Image is wider than canvas aspect ratio (needs horizontal cropping)
-        sHeight = img.height;
-        sWidth = sHeight * canvasAspectRatio;
-        sx = (img.width - sWidth) / 2;
-        sy = 0;
-      } else {
-        // Image is taller than or same aspect ratio as canvas (needs vertical cropping or no cropping)
-        sWidth = img.width;
-        sHeight = sWidth / canvasAspectRatio; // This might be taller than img.height if img is much narrower
-        if (sHeight > img.height) { // Recalculate if sHeight exceeds original image height
-            sHeight = img.height;
-            sWidth = sHeight * canvasAspectRatio;
-            sx = (img.width - sWidth) / 2; // Center horizontally
-            sy = 0;
-        } else {
-            sx = 0;
-            sy = (img.height - sHeight) / 2;
-        }
-      }
       
+      let sx = 0, sy = 0, sWidth = img.width, sHeight = img.height;
+
+      // "Cover" logic: Calculate source rectangle (from original image)
+      // to draw onto the destination canvas, cropping from the center.
+      if (imgAspectRatio > canvasAspectRatio) {
+        // Image is wider than canvas aspect ratio: image needs to be cropped horizontally.
+        // Source width will be smaller, source height will be full image height.
+        sWidth = img.height * canvasAspectRatio;
+        sx = (img.width - sWidth) / 2;
+        // sy remains 0, sHeight remains img.height
+      } else if (imgAspectRatio < canvasAspectRatio) {
+        // Image is taller than canvas aspect ratio: image needs to be cropped vertically.
+        // Source height will be smaller, source width will be full image width.
+        sHeight = img.width / canvasAspectRatio;
+        sy = (img.height - sHeight) / 2;
+        // sx remains 0, sWidth remains img.width
+      }
+      // If imgAspectRatio is equal to canvasAspectRatio, no cropping is needed.
+      // sx, sy will be 0,0 and sWidth, sHeight will be img.width, img.height.
+      
+      // Draw the calculated portion of the image onto the canvas, scaling it to fill the canvas.
       ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, canvas.width, canvas.height);
       
       try {
