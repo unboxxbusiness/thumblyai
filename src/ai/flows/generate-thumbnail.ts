@@ -32,16 +32,24 @@ const prompt = ai.definePrompt({
   name: 'generateThumbnailPrompt',
   input: {schema: GenerateThumbnailInputSchema},
   output: {schema: GenerateThumbnailOutputSchema},
-  prompt: `You are an AI that generates thumbnail images for videos.
+  prompt: `You are an expert YouTube thumbnail designer, specializing in creating highly engaging, modern, and professional thumbnails like those seen on top creator channels (e.g., Ali Abdaal).
 
-  Based on the video topic, color scheme, font pairing, and style, create a thumbnail image that is visually appealing and representative of the video content. Incorporate current design trends and principles to create a high-quality thumbnail.
+Your goal is to generate a thumbnail that is:
+- **Visually Striking:** Clean, minimalist yet eye-catching.
+- **Clear & Legible:** Features bold, easy-to-read text that highlights the core video topic.
+- **High Contrast:** Uses colors effectively for readability and visual pop.
+- **Professional:** Looks polished and high-quality.
+- **Engaging:** Designed to maximize click-through rates.
+- **Relevant:** Accurately reflects the video's content.
 
-  Video Topic: {{{videoTopic}}}
-  Color Scheme: {{{colorScheme}}}
-  Font Pairing: {{{fontPairing}}}
-  Style: {{{style}}}
+Consider the following inputs:
+Video Topic: {{{videoTopic}}}
+Color Scheme: {{{colorScheme}}}
+Font Pairing: {{{fontPairing}}} (Interpret as a general typographic style suggestion)
+Style: {{{style}}}
 
-  The thumbnail should be returned as a data URI.
+Incorporate these elements into a compelling thumbnail design. The primary text should be prominent. Avoid clutter. Focus on a single, clear message or visual.
+The thumbnail should be returned as a data URI.
   `,
 });
 
@@ -52,9 +60,28 @@ const generateThumbnailFlow = ai.defineFlow(
     outputSchema: GenerateThumbnailOutputSchema,
   },
   async input => {
+    const detailedPrompt = `Generate a high-quality, modern YouTube thumbnail, in the style of top creators like Ali Abdaal.
+The thumbnail must be:
+- Visually Striking: Clean, minimalist, yet eye-catching.
+- Clear & Legible: Feature bold, easy-to-read text.
+- High Contrast: Use colors effectively for readability and pop.
+- Professional: Look polished and high-quality.
+- Engaging: Designed to maximize click-through rates.
+- Relevant: Accurately reflect the video topic.
+
+Incorporate the following elements:
+Video Topic: "${input.videoTopic}"
+Color Scheme: "${input.colorScheme}" (Use as a guide, prioritize overall modern aesthetic)
+Font Pairing: "${input.fontPairing}" (Interpret this as a general typographic style guide for the text elements, e.g., 'Modern Sans Serif Duo' means use clean sans-serif fonts)
+Style: "${input.style}" (e.g., minimalist, bold, illustrated. Ensure this aligns with a modern YouTube look)
+
+The main text derived from the video topic should be prominent. Avoid clutter. Focus on a single, clear message or visual.
+For example, if the topic is 'How to invest in stocks', the thumbnail might feature a stylized graph, a person looking thoughtful, and bold text 'INVESTING 101'.
+Prioritize a clean aesthetic with strong typography. Ensure any human figures are well-composed and look professional.`;
+
     const {media} = await ai.generate({
       model: 'googleai/gemini-2.0-flash-exp',
-      prompt: `Generate a thumbnail for a video about ${input.videoTopic} with the color scheme ${input.colorScheme}, font pairing ${input.fontPairing}, and style ${input.style}.`, // Removed media url as there are no existing images
+      prompt: detailedPrompt,
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
       },

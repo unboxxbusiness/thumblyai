@@ -2,7 +2,7 @@
 'use server';
 
 /**
- * @fileOverview A flow to regenerate a thumbnail with slightly different parameters.
+ * @fileOverview A flow to regenerate a thumbnail with slightly different parameters, aiming for improved quality and modern YouTube aesthetics.
  *
  * - regenerateThumbnail - A function that handles the thumbnail regeneration process.
  * - RegenerateThumbnailInput - The input type for the regenerateThumbnail function.
@@ -18,7 +18,7 @@ const RegenerateThumbnailInputSchema = z.object({
   fontPairing: z.string().describe('The font pairing for the thumbnail.'),
   style: z.string().describe('The style of the thumbnail (e.g., clean, bold).'),
   previousThumbnail: z.string().describe(
-    'The previously generated thumbnail as a data URI that must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'.' // Documentation requirement.
+    'The previously generated thumbnail as a data URI that must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'.'
   ),
 });
 
@@ -40,19 +40,23 @@ const regenerateThumbnailPrompt = ai.definePrompt({
   name: 'regenerateThumbnailPrompt',
   input: {schema: RegenerateThumbnailInputSchema},
   output: {schema: RegenerateThumbnailOutputSchema},
-  prompt: `You are an expert thumbnail designer who can create compelling thumbnails based on the video topic, color scheme, font pairing and style.
+  prompt: `You are an expert YouTube thumbnail designer, specializing in refining and elevating thumbnails to match the style of top creators (e.g., Ali Abdaal).
 
-  Based on the following parameters, regenerate the thumbnail. Slightly adjust the design based on your knowledge of design principles and current trends to make it more visually appealing.
+You will be given a previous thumbnail and parameters. Your task is to regenerate the thumbnail, making it significantly more:
+- **Modern & Engaging:** Align with current YouTube design trends focusing on clarity, bold typography, and high visual appeal.
+- **Click-Worthy:** Optimize for higher click-through rates.
+- **Professional:** Ensure a polished, high-quality finish.
+- **Clearer & More Impactful:** Improve text legibility, color contrast, and overall composition.
 
-  Video Topic: {{{videoTopic}}}
-  Color Scheme: {{{colorScheme}}}
-  Font Pairing: {{{fontPairing}}}
-  Style: {{{style}}}
+Consider the following inputs and the previous thumbnail:
+Video Topic: {{{videoTopic}}}
+Color Scheme: {{{colorScheme}}} (Use as a guide, prioritize overall modern aesthetic)
+Font Pairing: {{{fontPairing}}} (Interpret as a general typographic style suggestion)
+Style: {{{style}}} (Ensure this aligns with a modern YouTube look)
+Previous Thumbnail: {{media url=previousThumbnail}}
 
-  Previous Thumbnail: {{media url=previousThumbnail}}
-
-  Ensure the regenerated thumbnail is of high quality and visually appealing.
-  Return the new thumbnail as a data URI.
+Analyze the previous thumbnail and apply your expertise to enhance its design. This might involve adjusting layout, typography, color balance, or adding subtle graphic elements to increase engagement, while adhering to the specified parameters. The goal is a noticeable improvement towards a professional, modern aesthetic with clear, bold text and a clean layout.
+Return the new thumbnail as a data URI.
   `,
 });
 
@@ -64,23 +68,29 @@ const regenerateThumbnailFlow = ai.defineFlow(
   },
   async input => {
     const {media} = await ai.generate({
-      // IMPORTANT: ONLY the googleai/gemini-2.0-flash-exp model is able to generate images. You MUST use exactly this model to generate images.
       model: 'googleai/gemini-2.0-flash-exp',
       prompt: [
         {media: {url: input.previousThumbnail}},
         {
-          text: `Regenerate this thumbnail, taking into account the following parameters:
+          text: `Regenerate this thumbnail to be significantly more modern, engaging, and professional, in the style of top YouTube creators like Ali Abdaal.
+Focus on:
+- **Improved Visual Appeal:** Make it cleaner, more minimalist yet eye-catching.
+- **Bolder & Clearer Typography:** Ensure text is highly legible and impactful.
+- **Enhanced Contrast & Colors:** Optimize color usage for pop and readability.
+- **Increased Click-Worthiness:** Design for maximum engagement.
+- **Professional Composition:** Ensure any human figures or key elements are well-composed and look professional.
 
-Video Topic: ${input.videoTopic}
-Color Scheme: ${input.colorScheme}
-Font Pairing: ${input.fontPairing}
-Style: ${input.style}
+Take into account the following parameters, using the provided image as a base for improvement:
+Video Topic: "${input.videoTopic}"
+Color Scheme: "${input.colorScheme}" (Use as a guide, prioritize overall modern aesthetic over strict adherence if it conflicts)
+Font Pairing: "${input.fontPairing}" (Interpret as a general typographic style guide, e.g., 'Modern Sans Serif Duo' means use clean sans-serif fonts)
+Style: "${input.style}" (Ensure this aligns with a modern YouTube look, e.g. minimalist, bold)
 
-Slightly adjust the design based on your knowledge of design principles and current trends to make it more visually appealing.`,
+Slightly adjust the design based on these principles and current trends to make it markedly more visually appealing and professional. The aim is a clear upgrade from the previous version, featuring strong, legible text and a clean, uncluttered layout.`,
         },
       ],
       config: {
-        responseModalities: ['TEXT', 'IMAGE'], // MUST provide both TEXT and IMAGE, IMAGE only won't work
+        responseModalities: ['TEXT', 'IMAGE'],
       },
     });
 
