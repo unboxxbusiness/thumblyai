@@ -36,32 +36,23 @@ const prompt = ai.definePrompt({
   name: 'generateThumbnailPrompt',
   input: {schema: GenerateThumbnailInputSchema},
   output: {schema: GenerateThumbnailOutputSchema},
-  prompt: `!!! EXTREMELY IMPORTANT RULES FOR TEXT ON THE THUMBNAIL !!!
-1.  **NO DESCRIPTIVE TEXT FROM PARAMETERS:** The "Color Scheme" ({{{colorScheme}}}), "Font Pairing" ({{{fontPairing}}}), and "Style" ({{{style}}}) parameters are for VISUAL INSPIRATION ONLY. Their names or any descriptive text about them MUST NOT appear on the image.
-2.  **ONLY VIDEO TOPIC TEXT:** The ONLY text allowed on the thumbnail image is a very short, impactful phrase derived SOLELY from the Video Topic: "{{{videoTopic}}}". Do NOT include any other words, numbers, or characters. No extra text or content.
-3.  **VIOLATION CHECK:** Before outputting the image, double-check and verify that NO unintended text (like parameter names, parts of these instructions, or any other stray characters) has been accidentally included on the image. Only text from "{{{videoTopic}}}" is permitted.
+  prompt: `!!! CRITICAL RULES !!!
+1.  TEXT ON IMAGE: The ONLY text on the thumbnail MUST be a short, impactful phrase derived SOLELY from the Video Topic: "{{{videoTopic}}}".
+2.  NO PARAMETER TEXT: The "Color Scheme" ({{{colorScheme}}}), "Font Pairing" ({{{fontPairing}}}), and "Style" ({{{style}}}) parameters are for VISUAL INSPIRATION ONLY. Their names or any descriptive text about them MUST NOT appear on the image.
+3.  NO EXTRA TEXT OR CONTENT: Absolutely no other text, instructions, or stray characters should appear on the image.
 
 Create a YouTube thumbnail for the video titled: "{{{videoTopic}}}".
-Your design MUST use the predefined color scheme ("{{{colorScheme}}}"), font pairing ("{{{fontPairing}}}"), and visual style ("{{{style}}}") for inspiration.
-The thumbnail must follow the latest viral YouTube clickbait thumbnail strategies. This means the thumbnail MUST exhibit the following characteristics:
-- **Relevant Imagery:** {{#if uploadedImageDataUri}}Use the User Provided Image (below) as the primary visual foundation.{{else}}You MUST generate or use relevant images, graphics, or visual elements that directly support the content of the video topic ("{{{videoTopic}}}") to enhance context and visual appeal.{{/if}}
-- **Clear Focal Point:** Establish a clear visual focal point, such as an expressive face, a dramatic object, or a compelling visual element that instantly draws the viewer's attention.
-- **Bold, High-Contrast Text:** Text (derived ONLY from "{{{videoTopic}}}") must be prominent, extremely easy to read, impactful, and feature high contrast against its background.
-- **Minimal Clutter:** The design should be clean and uncluttered, focusing on a singular message or visual to avoid overwhelming the viewer.
-- **Attention-Grabbing Visual Elements:** Incorporate visual elements that immediately attract attention and are directly relevant to the video's content ("{{{videoTopic}}}").
-- **Optimized for Clicks & Small Sizes:** The design must be fully optimized for maximum click-through rate and must look clear, legible, and effective even when viewed as a small thumbnail.
+- Design Guidance: Use the predefined Color Scheme ("{{{colorScheme}}}"), Font Pairing ("{{{fontPairing}}}"), and Style ("{{{style}}}") for visual inspiration.
+- Viral Strategy: Follow viral YouTube clickbait designs.
+- Imagery: {{#if uploadedImageDataUri}}Use the User Provided Image (below) as the primary visual foundation.{{else}}Generate or use relevant images based on the video topic ("{{{videoTopic}}}") to enhance context.{{/if}}
+- Key Elements: Include bold, high-contrast text (from "{{{videoTopic}}}"), a clear focal point (e.g., expressive face, dramatic object), minimal clutter, and eye-catching visual elements.
+- Optimization: Optimize for maximum clicks and ensure readability at small sizes.
+- Export & Dimensions: Export at exactly 1280x720 pixels (16:9 aspect ratio). The visual composition MUST fill this entire canvas. There must be NO black bars, NO AI-introduced cropping, and NO padding.
 
 {{#if uploadedImageDataUri}}
 User Provided Image: {{media url=uploadedImageDataUri}}
-CRITICAL INSTRUCTION (User Image Provided): A user-uploaded image is provided. YOU MUST use this uploaded image as the ABSOLUTE PRIMARY VISUAL FOUNDATION for the thumbnail. All other design elements (text, style, colors, composition) MUST be applied *to, around, or in direct support of* this user image. It should be the central focus or the main background. Ensure it integrates seamlessly and professionally, following all text and parameter rules.
+Instruction (User Image Provided): Use this uploaded image as the ABSOLUTE PRIMARY VISUAL FOUNDATION. All other design elements MUST be applied to or in support of this image.
 {{/if}}
-
-The primary text (derived *only* from the video topic) should be prominent.
-FINAL AND CRITICAL REQUIREMENT FOR IMAGE GENERATION:
-The output image dimensions MUST be exactly 1280 pixels wide by 720 pixels tall (a 16:9 aspect ratio).
-The visual composition must be designed to perfectly fill this 1280x720 canvas.
-There must be NO black bars, NO cropping by the AI, and NO padding within the generated image. The generated content itself MUST utilize the full 1280x720 image canvas for direct download and upload compatibility.
-Return the image as a data URI.
   `,
 });
 
@@ -72,38 +63,31 @@ const generateThumbnailFlow = ai.defineFlow(
     outputSchema: GenerateThumbnailOutputSchema,
   },
   async input => {
-    const basePromptText = `!!! EXTREMELY IMPORTANT RULES FOR TEXT ON THE THUMBNAIL !!!
-1.  **NO DESCRIPTIVE TEXT FROM PARAMETERS:** The "Color Scheme" ("${input.colorScheme}"), "Font Pairing" ("${input.fontPairing}"), and "Style" ("${input.style}") parameters are for VISUAL INSPIRATION ONLY. Their names or any descriptive text about them MUST NOT appear on the image.
-2.  **ONLY VIDEO TOPIC TEXT:** The ONLY text allowed on the thumbnail image is a very short, impactful phrase derived SOLELY from the Video Topic: "${input.videoTopic}". Do NOT include any other words, numbers, or characters. No extra text or content.
-3.  **VIOLATION CHECK:** Before outputting the image, double-check and verify that NO unintended text (like parameter names, parts of these instructions, or any other stray characters) has been accidentally included on the image. Only text from "${input.videoTopic}" is permitted.
+    const { videoTopic, colorScheme, fontPairing, style, uploadedImageDataUri } = input;
 
-Create a YouTube thumbnail for the video titled: "${input.videoTopic}".
-Your design MUST use the predefined color scheme ("${input.colorScheme}"), font pairing ("${input.fontPairing}"), and visual style ("${input.style}") for inspiration.
-The thumbnail must follow the latest viral YouTube clickbait thumbnail strategies. This means the thumbnail MUST exhibit the following characteristics:
-- **Relevant Imagery:** ${input.uploadedImageDataUri ? "Use the User Provided Image (provided as the first media item in this prompt) as the primary visual foundation." : `You MUST generate or use relevant images, graphics, or visual elements that directly support the content of the video topic ("${input.videoTopic}") to enhance context and visual appeal.`}
-- **Clear Focal Point:** Establish a clear visual focal point, such as an expressive face, a dramatic object, or a compelling visual element that instantly draws the viewer's attention.
-- **Bold, High-Contrast Text:** Text (derived ONLY from "${input.videoTopic}") must be prominent, extremely easy to read, impactful, and feature high contrast against its background.
-- **Minimal Clutter:** The design should be clean and uncluttered, focusing on a singular message or visual to avoid overwhelming the viewer.
-- **Attention-Grabbing Visual Elements:** Incorporate visual elements that immediately attract attention and are directly relevant to the video's content ("${input.videoTopic}").
-- **Optimized for Clicks & Small Sizes:** The design must be fully optimized for maximum click-through rate and must look clear, legible, and effective even when viewed as a small thumbnail.
+    let promptText = `!!! CRITICAL RULES !!!
+1.  TEXT ON IMAGE: The ONLY text on the thumbnail MUST be a short, impactful phrase derived SOLELY from the Video Topic: "${videoTopic}".
+2.  NO PARAMETER TEXT: The "Color Scheme" ("${colorScheme}"), "Font Pairing" ("${fontPairing}"), and "Style" ("${style}") parameters are for VISUAL INSPIRATION ONLY. Their names or any descriptive text about them MUST NOT appear on the image.
+3.  NO EXTRA TEXT OR CONTENT: Absolutely no other text, instructions, or stray characters should appear on the image.
 
-The text (derived *only* from "${input.videoTopic}") should be prominent.
-Prioritize a clean aesthetic with strong typography. Ensure any human figures (if generated or present in an uploaded image) are well-composed and look professional.`;
+Create a YouTube thumbnail for the video titled: "${videoTopic}".
+- Design Guidance: Use the predefined Color Scheme ("${colorScheme}"), Font Pairing ("${fontPairing}"), and Style ("${style}") for visual inspiration.
+- Viral Strategy: Follow viral YouTube clickbait designs.
+- Imagery: ${uploadedImageDataUri ? "Use the User Provided Image (provided as the first media item in this prompt) as the primary visual foundation." : `Generate or use relevant images based on the video topic ("${videoTopic}") to enhance context.`}
+- Key Elements: Include bold, high-contrast text (from "${videoTopic}"), a clear focal point (e.g., expressive face, dramatic object), minimal clutter, and eye-catching visual elements.
+- Optimization: Optimize for maximum clicks and ensure readability at small sizes.
+- Export & Dimensions: Export at exactly 1280x720 pixels (16:9 aspect ratio). The visual composition MUST fill this entire canvas. There must be NO black bars, NO AI-introduced cropping, and NO padding.`;
 
     let imageGenerationPromptConfig: string | Array<Record<string, any>>;
-    const finalResolutionInstruction = `
-FINAL AND CRITICAL REQUIREMENT FOR IMAGE GENERATION:
-The output image dimensions MUST be exactly 1280 pixels wide by 720 pixels tall (a 16:9 aspect ratio).
-The visual composition must be designed to perfectly fill this 1280x720 canvas.
-There must be NO black bars, NO cropping by the AI, and NO padding within the generated image. The generated content itself MUST utilize the full 1280x720 image canvas for direct download and upload compatibility.`;
 
-    if (input.uploadedImageDataUri) {
+    if (uploadedImageDataUri) {
+      promptText += `\n\nInstruction (User Image Provided): Use this uploaded image as the ABSOLUTE PRIMARY VISUAL FOUNDATION. All other design elements MUST be applied to or in support of this image.`;
       imageGenerationPromptConfig = [
-        { media: { url: input.uploadedImageDataUri } },
-        { text: `${basePromptText}\n\nCRITICAL INSTRUCTION (User Image Provided): A user-uploaded image is provided. YOU MUST use this uploaded image as the ABSOLUTE PRIMARY VISUAL FOUNDATION for the thumbnail. All other design elements (text, style, colors, composition) MUST be applied *to, around, or in direct support of* this user image. It should be the central focus or the main background. Ensure it integrates seamlessly and professionally, following all text and parameter rules.\n${finalResolutionInstruction}` }
+        { media: { url: uploadedImageDataUri } },
+        { text: promptText }
       ];
     } else {
-      imageGenerationPromptConfig = `${basePromptText}\n${finalResolutionInstruction}`;
+      imageGenerationPromptConfig = promptText;
     }
 
     const {media} = await ai.generate({
@@ -119,4 +103,5 @@ There must be NO black bars, NO cropping by the AI, and NO padding within the ge
     
 
     
+
 

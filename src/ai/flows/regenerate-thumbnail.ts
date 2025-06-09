@@ -44,54 +44,29 @@ const regenerateThumbnailPrompt = ai.definePrompt({
   name: 'regenerateThumbnailPrompt',
   input: {schema: RegenerateThumbnailInputSchema},
   output: {schema: RegenerateThumbnailOutputSchema},
-  prompt: `!!! EXTREMELY IMPORTANT RULES FOR TEXT ON THE THUMBNAIL (REGENERATION) !!!
-1.  **NO DESCRIPTIVE TEXT FROM PARAMETERS:** The "Color Scheme" ({{{colorScheme}}}), "Font Pairing" ({{{fontPairing}}}), and "Style" ({{{style}}}) parameters are for VISUAL INSPIRATION ONLY. Their names or any descriptive text about them MUST NOT appear on the image.
-2.  **ONLY VIDEO TOPIC TEXT:** The ONLY text allowed on the thumbnail image is a very short, impactful phrase derived SOLELY from the Video Topic: "{{{videoTopic}}}". Do NOT include any other words, numbers, or characters. No extra text or content.
-3.  **VIOLATION CHECK:** Before outputting the image, double-check and verify that NO unintended text (like parameter names, parts of these instructions, or any other stray characters) has been accidentally included on the image. Only text from "{{{videoTopic}}}" is permitted.
+  prompt: `!!! CRITICAL RULES (REGENERATION) !!!
+1.  TEXT ON IMAGE: The ONLY text on the thumbnail MUST be a short, impactful phrase derived SOLELY from the Video Topic: "{{{videoTopic}}}".
+2.  NO PARAMETER TEXT: The "Color Scheme" ({{{colorScheme}}}), "Font Pairing" ({{{fontPairing}}}), and "Style" ({{{style}}}) parameters are for VISUAL INSPIRATION ONLY. Their names or any descriptive text about them MUST NOT appear on the image.
+3.  NO EXTRA TEXT OR CONTENT: Absolutely no other text, instructions, or stray characters should appear on the image.
 
-Recap for Clarity (Regeneration):
-- Text on Image: ONLY from "{{{videoTopic}}}", keep it short and bold.
-- Parameters ({{{colorScheme}}}, {{{fontPairing}}}, {{{style}}}): Guide visual choices (colors, fonts, overall aesthetic) ONLY. DO NOT write their names on the image.
-
-Your primary task is to REGENERATE a YouTube thumbnail for the video titled "{{{videoTopic}}}", aiming for significant improvement.
-Your redesign MUST use the predefined color scheme ("{{{colorScheme}}}"), font pairing ("{{{fontPairing}}}"), and visual style ("{{{style}}}") for inspiration.
-The regenerated thumbnail must follow the latest viral YouTube clickbait thumbnail strategies. This means the thumbnail MUST exhibit the following characteristics even more strongly:
-- **Relevant Imagery:**
+Regenerate an improved YouTube thumbnail for the video titled: "{{{videoTopic}}}".
+- Design Guidance: Use the predefined Color Scheme ("{{{colorScheme}}}"), Font Pairing ("{{{fontPairing}}}"), and Style ("{{{style}}}") for visual inspiration.
+- Viral Strategy: Follow viral YouTube clickbait designs, aiming for significant improvement over the previous version.
+- Imagery:
   {{#if uploadedImageDataUri}}
-    Use the NEW User Provided Image (second media item) as the dominant visual foundation. You may draw MINOR inspiration from the Previous Thumbnail (first media item) if it enhances the new image. The new image should replace or significantly alter the previous thumbnail's imagery.
+    A NEW User Provided Image is available (second media item). Use THIS as the dominant visual foundation. You may draw MINOR inspiration from the Previous Thumbnail (first media item) ONLY if it enhances the new image. The new image should replace or significantly alter the previous one.
   {{else}}
-    Analyze the Previous Thumbnail (first media item). You MUST enhance it by generating or using relevant images, graphics, or visual elements that directly support the content of the video topic ("{{{videoTopic}}}") to improve context and visual appeal, or by significantly improving existing imagery.
+    Analyze the Previous Thumbnail (first media item). Enhance it by generating/using more relevant images or significantly improving existing imagery based on the video topic ("{{{videoTopic}}}").
   {{/if}}
-- **Clear Focal Point:** Establish or enhance a clear visual focal point, such as an expressive face, a dramatic object, or a compelling visual element that instantly draws the viewer's attention.
-- **Bold, High-Contrast Text:** Text (derived ONLY from "{{{videoTopic}}}") must be prominent, extremely easy to read, impactful, and feature high contrast against its background.
-- **Minimal Clutter:** The design should be clean and uncluttered, focusing on a singular message or visual to avoid overwhelming the viewer. Remove any unnecessary elements from the previous design.
-- **Attention-Grabbing Visual Elements:** Incorporate or enhance visual elements that immediately attract attention and are directly relevant to the video's content ("{{{videoTopic}}}").
-- **Optimized for Clicks & Small Sizes:** The design must be fully optimized for maximum click-through rate and must look clear, legible, and effective even when viewed as a small thumbnail.
-- **Professional & Engaging:** The overall look should be polished, high-quality, and accurately represent the content of the video in an engaging way, showing a clear improvement over the previous version.
+- Key Elements: Include bold, high-contrast text (from "{{{videoTopic}}}"), a clear focal point (e.g., expressive face, dramatic object), minimal clutter, and eye-catching visual elements.
+- Optimization: Optimize for maximum clicks and ensure readability at small sizes.
+- Export & Dimensions: Export at exactly 1280x720 pixels (16:9 aspect ratio). The visual composition MUST fill this entire canvas. There must be NO black bars, NO AI-introduced cropping, and NO padding.
 
-Consider the following inputs, ensuring all EXTREMELY IMPORTANT TEXT RULES above are strictly followed:
-Video Topic: {{{videoTopic}}}
-Color Scheme (for visual design guidance): {{{colorScheme}}}
-Font Pairing (for visual font style guidance): {{{fontPairing}}}
-Style (for overall visual aesthetic guidance): {{{style}}}
 Previous Thumbnail: {{media url=previousThumbnail}}
-
 {{#if uploadedImageDataUri}}
 New User Provided Image: {{media url=uploadedImageDataUri}}
-CRITICAL INSTRUCTION FOR REGENERATION (NEW USER IMAGE PROVIDED):
-- The FIRST media item in this prompt is the *previous thumbnail*.
-- The SECOND media item in this prompt is a *newly uploaded image* by the user.
-YOUR ABSOLUTE TOP PRIORITY is to use the NEWLY UPLOADED IMAGE (the second media item) as the dominant visual foundation for the regenerated thumbnail. It must be the central focus or main background. You may draw MINOR inspiration or subtle elements from the PREVIOUS THUMBNAIL (the first media item) ONLY if they directly enhance and integrate seamlessly with the new uploaded image and fit the overall design goals of clarity, modernity, and professionalism. The final design MUST heavily feature and be built around the new user-uploaded image. Remember all EXTREMELY IMPORTANT TEXT RULES.
-{{else}}
-Instruction for Previous Thumbnail: Analyze the 'Previous Thumbnail' (first media item) and apply your expertise to significantly enhance its design based on the other parameters and the clickbait strategies. This includes potentially adding or replacing imagery to be more relevant and impactful. Align with the quality goals and EXTREMELY IMPORTANT TEXT RULES mentioned above.
+Instruction (New User Image Provided): The NEWLY UPLOADED IMAGE (second media item) is your TOP PRIORITY. Build the design around it.
 {{/if}}
-
-The goal is a noticeable improvement towards a professional, modern aesthetic with clear, bold text (derived *only* from the Video Topic) and a clean layout.
-FINAL AND CRITICAL REQUIREMENT FOR IMAGE GENERATION:
-The output image dimensions MUST be exactly 1280 pixels wide by 720 pixels tall (a 16:9 aspect ratio).
-The visual composition must be designed to perfectly fill this 1280x720 canvas.
-There must be NO black bars, NO cropping by the AI, and NO padding within the generated image. The generated content itself MUST utilize the full 1280x720 image canvas for direct download and upload compatibility.
-Return the image as a data URI.
   `,
 });
 
@@ -102,47 +77,35 @@ const regenerateThumbnailFlow = ai.defineFlow(
     outputSchema: RegenerateThumbnailOutputSchema,
   },
   async input => {
-    const baseRegenerationText = `!!! EXTREMELY IMPORTANT RULES FOR TEXT ON THE THUMBNAIL (REGENERATION) !!!
-1.  **NO DESCRIPTIVE TEXT FROM PARAMETERS:** The "Color Scheme" ("${input.colorScheme}"), "Font Pairing" ("${input.fontPairing}"), and "Style" ("${input.style}") parameters are for VISUAL INSPIRATION ONLY. Their names or any descriptive text about them MUST NOT appear on the image.
-2.  **ONLY VIDEO TOPIC TEXT:** The ONLY text allowed on the thumbnail image is a very short, impactful phrase derived SOLELY from the Video Topic: "${input.videoTopic}". Do NOT include any other words, numbers, or characters. No extra text or content.
-3.  **VIOLATION CHECK:** Before outputting the image, double-check and verify that NO unintended text (like parameter names, parts of these instructions, or any other stray characters) has been accidentally included on the image. Only text from "${input.videoTopic}" is permitted.
+    const { videoTopic, colorScheme, fontPairing, style, previousThumbnail, uploadedImageDataUri } = input;
 
-Recap for Clarity (Regeneration):
-- Text on Image: ONLY from "${input.videoTopic}", keep it short and bold.
-- Parameters ("${input.colorScheme}", "${input.fontPairing}", "${input.style}"): Guide visual choices (colors, fonts, overall aesthetic) ONLY. DO NOT write their names on the image.
+    let promptText = `!!! CRITICAL RULES (REGENERATION) !!!
+1.  TEXT ON IMAGE: The ONLY text on the thumbnail MUST be a short, impactful phrase derived SOLELY from the Video Topic: "${videoTopic}".
+2.  NO PARAMETER TEXT: The "Color Scheme" ("${colorScheme}"), "Font Pairing" ("${fontPairing}"), and "Style" ("${style}") parameters are for VISUAL INSPIRATION ONLY. Their names or any descriptive text about them MUST NOT appear on the image.
+3.  NO EXTRA TEXT OR CONTENT: Absolutely no other text, instructions, or stray characters should appear on the image.
 
-Regenerate the YouTube thumbnail for the video titled "${input.videoTopic}", aiming for significant improvement.
-Your redesign MUST use the predefined color scheme ("${input.colorScheme}"), font pairing ("${input.fontPairing}"), and visual style ("${input.style}") for inspiration.
-The regenerated thumbnail must follow the latest viral YouTube clickbait thumbnail strategies. This means the thumbnail MUST exhibit the following characteristics even more strongly:
-- **Relevant Imagery:** ${input.uploadedImageDataUri ? "Use the NEW User Provided Image (second media item in this prompt) as the dominant visual foundation. You may draw MINOR inspiration from the Previous Thumbnail (first media item) if it enhances the new image. The new image should replace or significantly alter the previous thumbnail's imagery." : `Analyze the Previous Thumbnail (first media item in this prompt). You MUST enhance it by generating or using relevant images, graphics, or visual elements that directly support the content of the video topic ("${input.videoTopic}") to improve context and visual appeal, or by significantly improving existing imagery.`}
-- **Clear Focal Point:** Establish or enhance a clear visual focal point, such as an expressive face, a dramatic object, or a compelling visual element that instantly draws the viewer's attention.
-- **Bold, High-Contrast Text:** Text (derived ONLY from "${input.videoTopic}") must be prominent, extremely easy to read, impactful, and feature high contrast against its background.
-- **Minimal Clutter:** The design should be clean and uncluttered, focusing on a singular message or visual to avoid overwhelming the viewer. Remove any unnecessary elements from the previous design.
-- **Attention-Grabbing Visual Elements:** Incorporate or enhance visual elements that immediately attract attention and are directly relevant to the video's content ("${input.videoTopic}").
-- **Optimized for Clicks & Small Sizes:** The design must be fully optimized for maximum click-through rate and must look clear, legible, and effective even when viewed as a small thumbnail.
-- **Professional & Engaging:** The overall look should be polished, high-quality, and accurately represent the content of the video ("${input.videoTopic}") in an engaging way, showing a clear improvement over the previous version.
-
-Aim for a clear upgrade, featuring strong, legible text (derived *only* from "${input.videoTopic}") and a clean, uncluttered layout.`;
+Regenerate an improved YouTube thumbnail for the video titled: "${videoTopic}".
+- Design Guidance: Use the predefined Color Scheme ("${colorScheme}"), Font Pairing ("${fontPairing}"), and Style ("${style}") for visual inspiration.
+- Viral Strategy: Follow viral YouTube clickbait designs, aiming for significant improvement over the previous version.
+- Key Elements: Include bold, high-contrast text (from "${videoTopic}"), a clear focal point (e.g., expressive face, dramatic object), minimal clutter, and eye-catching visual elements.
+- Optimization: Optimize for maximum clicks and ensure readability at small sizes.
+- Export & Dimensions: Export at exactly 1280x720 pixels (16:9 aspect ratio). The visual composition MUST fill this entire canvas. There must be NO black bars, NO AI-introduced cropping, and NO padding.`;
 
     const promptParts: Array<Record<string, any>> = [
-      { media: { url: input.previousThumbnail } }, // Previous thumbnail is always the first media item.
+      { media: { url: previousThumbnail } }, // Previous thumbnail is always the first media item.
     ];
-
-    let regenerationInstructionsText = baseRegenerationText;
-    const finalResolutionInstruction = `
-FINAL AND CRITICAL REQUIREMENT FOR IMAGE GENERATION:
-The output image dimensions MUST be exactly 1280 pixels wide by 720 pixels tall (a 16:9 aspect ratio).
-The visual composition must be designed to perfectly fill this 1280x720 canvas.
-There must be NO black bars, NO cropping by the AI, and NO padding within the generated image. The generated content itself MUST utilize the full 1280x720 image canvas for direct download and upload compatibility.`;
-
-
-    if (input.uploadedImageDataUri) {
-      promptParts.push({ media: {url: input.uploadedImageDataUri }}); // New uploaded image is the second media item, if present.
-      regenerationInstructionsText += `\n\nCRITICAL INSTRUCTION FOR REGENERATION (NEW USER IMAGE PROVIDED):\n- The FIRST media item is the *previous thumbnail*.\n- The SECOND media item is the *new user-uploaded image*.\nYOUR ABSOLUTE TOP PRIORITY is to use the NEWLY UPLOADED IMAGE as the dominant visual foundation. It must be the central focus or main background. You may draw MINOR inspiration or subtle elements from the PREVIOUS THUMBNAIL ONLY if they directly enhance and integrate seamlessly with the new uploaded image. The final design MUST heavily feature and be built around the new user-uploaded image. Remember all EXTREMELY IMPORTANT TEXT RULES.\n${finalResolutionInstruction}`;
+    
+    let imageryInstruction = "";
+    if (uploadedImageDataUri) {
+      imageryInstruction = `\n- Imagery: A NEW User Provided Image is available (second media item in this prompt). Use THIS as the dominant visual foundation. You may draw MINOR inspiration from the Previous Thumbnail (first media item in this prompt) ONLY if it enhances the new image. The new image should replace or significantly alter the previous one.`;
+      promptParts.push({ media: {url: uploadedImageDataUri }}); // New uploaded image is the second media item, if present.
+      imageryInstruction += `\n\nInstruction (New User Image Provided): The NEWLY UPLOADED IMAGE (second media item in this prompt) is your TOP PRIORITY. Build the design around it.`;
     } else {
-      regenerationInstructionsText += `\n\nInstruction for Previous Thumbnail: Analyze the 'Previous Thumbnail' (first media item) and apply your expertise to significantly enhance its design based on the other parameters and the clickbait strategies. This includes potentially adding or replacing imagery to be more relevant and impactful. Align with the quality goals and EXTREMELY IMPORTANT TEXT RULES mentioned above.\n${finalResolutionInstruction}`;
+      imageryInstruction = `\n- Imagery: Analyze the Previous Thumbnail (first media item in this prompt). Enhance it by generating/using more relevant images or significantly improving existing imagery based on the video topic ("${videoTopic}").`;
     }
-    promptParts.push({text: regenerationInstructionsText});
+    
+    promptText += imageryInstruction;
+    promptParts.push({text: promptText});
 
     const {media} = await ai.generate({
       model: 'googleai/gemini-2.0-flash-exp',
@@ -158,4 +121,5 @@ There must be NO black bars, NO cropping by the AI, and NO padding within the ge
     
 
     
+
 
