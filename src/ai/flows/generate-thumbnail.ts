@@ -66,6 +66,7 @@ Recap for Text: The text on the thumbnail must be concise, taken ONLY from the v
 
 Incorporate these elements into a compelling thumbnail design. The primary text (derived *only* from the video topic) should be prominent.
 The thumbnail MUST be high resolution, targeting 1920x1080 pixels (16:9 aspect ratio), and returned as a data URI.
+FINAL AND CRITICAL REQUIREMENT: The output image dimensions MUST be exactly 1920 pixels wide by 1080 pixels tall, maintaining a 16:9 aspect ratio.
   `,
 });
 
@@ -100,14 +101,15 @@ The text (derived *only* from "${input.videoTopic}") should be prominent.
 Prioritize a clean aesthetic with strong typography. Ensure any human figures (if generated or present in an uploaded image) are well-composed and look professional.`;
 
     let imageGenerationPromptConfig: string | Array<Record<string, any>>;
+    const finalResolutionInstruction = "\n\nFINAL AND CRITICAL REQUIREMENT: The output image dimensions MUST be exactly 1920 pixels wide by 1080 pixels tall, maintaining a 16:9 aspect ratio.";
 
     if (input.uploadedImageDataUri) {
       imageGenerationPromptConfig = [
         { media: { url: input.uploadedImageDataUri } },
-        { text: `CRITICAL INSTRUCTION (User Image Provided):\nA user-uploaded image is provided as the first media item in this prompt. YOU MUST use this uploaded image as the_ABSOLUTE_PRIMARY_VISUAL_FOUNDATION for the thumbnail. All other design elements (text, style, colors, composition) MUST be applied *to, around, or in direct support of* this user image. It should be the central focus or the main background. Ensure it integrates seamlessly and professionally.\n\n${basePromptText}\n\nFurther details for using the uploaded image: Integrate it naturally as a key component or background for the thumbnail, complementing the Video Topic ("${input.videoTopic}"). REMEMBER THE CRITICAL TEXT AND PARAMETER USAGE RULES ABOVE: Parameter names (like "${input.colorScheme}") are for design guidance only and MUST NOT be written on the image. Text on the image MUST come ONLY from the Video Topic ("${input.videoTopic}"). The final image MUST target a resolution of 1920x1080 pixels.` }
+        { text: `CRITICAL INSTRUCTION (User Image Provided):\nA user-uploaded image is provided as the first media item in this prompt. YOU MUST use this uploaded image as the_ABSOLUTE_PRIMARY_VISUAL_FOUNDATION for the thumbnail. All other design elements (text, style, colors, composition) MUST be applied *to, around, or in direct support of* this user image. It should be the central focus or the main background. Ensure it integrates seamlessly and professionally.\n\n${basePromptText}\n\nFurther details for using the uploaded image: Integrate it naturally as a key component or background for the thumbnail, complementing the Video Topic ("${input.videoTopic}"). REMEMBER THE CRITICAL TEXT AND PARAMETER USAGE RULES ABOVE: Parameter names (like "${input.colorScheme}") are for design guidance only and MUST NOT be written on the image. Text on the image MUST come ONLY from the Video Topic ("${input.videoTopic}"). The final image MUST target a resolution of 1920x1080 pixels.${finalResolutionInstruction}` }
       ];
     } else {
-      imageGenerationPromptConfig = `${basePromptText}\n\nINSTRUCTION (No User Image): Generate all visual elements for the thumbnail based on the Video Topic ("${input.videoTopic}"). REMEMBER THE CRITICAL TEXT AND PARAMETER USAGE RULES ABOVE: Parameter names (like "${input.colorScheme}") are for design guidance only and MUST NOT be written on the image. Text on the image MUST come ONLY from the Video Topic ("${input.videoTopic}"). Ensure the generated image is high resolution, specifically targeting 1920x1080 pixels (16:9 aspect ratio).`;
+      imageGenerationPromptConfig = `${basePromptText}\n\nINSTRUCTION (No User Image): Generate all visual elements for the thumbnail based on the Video Topic ("${input.videoTopic}"). REMEMBER THE CRITICAL TEXT AND PARAMETER USAGE RULES ABOVE: Parameter names (like "${input.colorScheme}") are for design guidance only and MUST NOT be written on the image. Text on the image MUST come ONLY from the Video Topic ("${input.videoTopic}"). Ensure the generated image is high resolution, specifically targeting 1920x1080 pixels (16:9 aspect ratio).${finalResolutionInstruction}`;
     }
 
     const {media} = await ai.generate({
