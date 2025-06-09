@@ -27,8 +27,10 @@ export default function DownloadButton({
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement("canvas");
+      // Set canvas dimensions to the target resolution (which is 16:9)
       canvas.width = resolution.width;
       canvas.height = resolution.height;
+      
       const ctx = canvas.getContext("2d");
 
       if (!ctx) {
@@ -36,34 +38,37 @@ export default function DownloadButton({
         return;
       }
 
-      // Fill background with black (for letterboxing/pillarboxing if needed)
+      // Fill background with black. This will be visible for letterboxing/pillarboxing.
       ctx.fillStyle = 'black';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Calculate new dimensions to "contain" the image within the canvas while maintaining aspect ratio
       const imageAspectRatio = img.width / img.height;
       const canvasAspectRatio = canvas.width / canvas.height;
       
       let scaledWidth, scaledHeight, dx, dy;
 
+      // "Contain" logic: Scale image to fit within canvas while maintaining aspect ratio
       if (imageAspectRatio > canvasAspectRatio) {
-        // Image is wider than canvas aspect ratio (needs letterboxing if canvas is taller, or fits width and centers vertically)
+        // Image is wider than canvas aspect ratio (or same width, different height)
+        // Fit to canvas width, scale height accordingly
         scaledWidth = canvas.width;
         scaledHeight = canvas.width / imageAspectRatio;
       } else {
-        // Image is taller than canvas aspect ratio (needs pillarboxing if canvas is wider, or fits height and centers horizontally)
+        // Image is taller than canvas aspect ratio (or same height, different width) or same aspect ratio
+        // Fit to canvas height, scale width accordingly
         scaledHeight = canvas.height;
         scaledWidth = canvas.height * imageAspectRatio;
       }
 
-      // Calculate offsets to center the image on the canvas
+      // Calculate offsets to center the scaled image on the canvas
       dx = (canvas.width - scaledWidth) / 2;
       dy = (canvas.height - scaledHeight) / 2;
       
-      // Draw the image onto the canvas
+      // Draw the source image onto the canvas, scaled and centered
       ctx.drawImage(img, 0, 0, img.width, img.height, dx, dy, scaledWidth, scaledHeight);
       
       try {
+        // The canvas (and thus the data URL) will have the dimensions of resolution.width x resolution.height
         const dataUrl = canvas.toDataURL("image/png");
         const link = document.createElement("a");
         const safeFilenamePrefix = filenamePrefix.replace(/[^a-z0-9]/gi, '_').toLowerCase();
