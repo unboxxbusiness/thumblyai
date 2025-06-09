@@ -40,8 +40,6 @@ export async function regenerateThumbnail(input: RegenerateThumbnailInput): Prom
   return regenerateThumbnailFlow(input);
 }
 
-// This prompt definition is kept for potential future use or direct invocation,
-// but the regenerateThumbnailFlow currently constructs its own prompt for ai.generate.
 const regenerateThumbnailPrompt = ai.definePrompt({
   name: 'regenerateThumbnailPrompt',
   input: {schema: RegenerateThumbnailInputSchema},
@@ -57,21 +55,23 @@ You will be given a previous thumbnail and parameters. Your task is to regenerat
 
 Consider the following inputs:
 Video Topic: {{{videoTopic}}}
-Color Scheme: {{{colorScheme}}}
-Font Pairing: {{{fontPairing}}}
-Style: {{{style}}}
+Color Scheme (for design guidance): {{{colorScheme}}}
+Font Pairing (for design guidance): {{{fontPairing}}}
+Style (for design guidance): {{{style}}}
 Previous Thumbnail: {{media url=previousThumbnail}}
 
 {{#if uploadedImageDataUri}}
 New User Provided Image: {{media url=uploadedImageDataUri}}
-Instruction for New User Image: A new image has also been uploaded (second media item). YOU MUST prioritize and prominently integrate this NEW user-provided image into the regenerated thumbnail. It should replace elements from the 'Previous Thumbnail' or become the new primary visual. Ensure it blends seamlessly and professionally with the overall style, topic, color scheme, and font pairing, improving upon the previous design. The text displayed on the regenerated thumbnail image MUST be derived *ONLY* from the absolute most essential, concise phrase or keywords from the video topic: ({{{videoTopic}}}). It must be extremely short, impactful, and clear.
+Instruction for New User Image: A new image has also been uploaded (second media item). YOU MUST prioritize and prominently integrate this NEW user-provided image into the regenerated thumbnail. It should replace elements from the 'Previous Thumbnail' or become the new primary visual. Ensure it blends seamlessly and professionally with the overall style, topic, color scheme, and font pairing, improving upon the previous design.
 {{else}}
-Instruction for Previous Thumbnail: Analyze the 'Previous Thumbnail' (first media item) and apply your expertise to significantly enhance its design based on the other parameters. The text displayed on the regenerated thumbnail image MUST be derived *ONLY* from the absolute most essential, concise phrase or keywords from the video topic: ({{{videoTopic}}}). It must be extremely short, impactful, and clear.
+Instruction for Previous Thumbnail: Analyze the 'Previous Thumbnail' (first media item) and apply your expertise to significantly enhance its design based on the other parameters.
 {{/if}}
 
-IMPORTANT (Applies to all regenerations):
-1.  **Text Content (CRITICAL FOR REGENERATION):** The text displayed on the regenerated thumbnail image MUST be derived *ONLY* from the absolute most essential, concise phrase or keywords from the video topic: ({{{videoTopic}}}). It must be extremely short, impactful, and clear. Absolutely NO additional words, sentences, or elaborations beyond this core topic phrase are permitted.
-2.  **Parameter Usage:** Do NOT include the literal names of the color scheme, font pairing, or style as text in the new thumbnail image. Instead, *use* these selections to *guide* the visual design choices, improving upon the previous thumbnail.
+IMPORTANT - PARAMETER USAGE & TEXT RESTRICTIONS (ABSOLUTELY CRITICAL FOR REGENERATION):
+1.  **Parameter Influence, NOT Text:** The selected Color Scheme ({{{colorScheme}}}), Font Pairing ({{{fontPairing}}}), and Style ({{{style}}}) are for INSPIRATION and GUIDANCE of the visual design ONLY. Their names or descriptions (e.g., 'Bright & Punchy', 'Modern Sans Serif Duo') MUST NOT appear as text anywhere on the regenerated thumbnail image.
+2.  **Video Topic is KING for Text:** The ONLY text permitted on the regenerated thumbnail image MUST be a very short, impactful phrase or keywords derived directly and exclusively from the Video Topic: "{{{videoTopic}}}". NO other words, sentences, or descriptions (especially not parameter names) should be written on the image.
+
+Recap for Text: The text on the regenerated thumbnail must be concise, taken ONLY from the video topic. All other parameters guide the visual style, not the text content.
 
 Analyze the provided image(s) and apply your expertise to enhance the design. This might involve adjusting layout, typography, color balance, or adding subtle graphic elements to increase engagement, while adhering to the specified parameters. The goal is a noticeable improvement towards a professional, modern aesthetic with clear, bold text (derived *only*from the Video Topic) and a clean layout.
 The new thumbnail should be high resolution (suitable for 1920x1080, 16:9 aspect ratio) and returned as a data URI.
@@ -89,18 +89,18 @@ const regenerateThumbnailFlow = ai.defineFlow(
 Focus on:
 - **Improved Visual Appeal:** Make it cleaner, more minimalist yet eye-catching.
 - **Bolder & Clearer Typography:** Ensure text is highly legible and impactful.
-- **Enhanced Contrast & Colors:** Optimize color usage for pop and readability based on the selected color scheme: "${input.colorScheme}".
+- **Enhanced Contrast & Colors:** Optimize color usage for pop and readability based on the selected color scheme parameter: "${input.colorScheme}".
 - **Significantly Increased Click-Worthiness & Modern Appeal:** Elevate the design to be highly compelling by adopting cutting-edge YouTube thumbnail strategies for maximum engagement and a modern, professional look (e.g., Ali Abdaal). This involves dramatically enhancing visual impact (e.g., more dynamic compositions, intriguing elements, clear subject focus, or emotion-driven imagery if appropriate), making text even bolder, clearer, and more prominent, and optimizing colors/contrast for immediate attention, all while improving relevance and directness to the video topic.
 - **Professional Composition:** Ensure any human figures or key elements are well-composed and look professional.
-- Typographic Style: Apply a font style inspired by "${input.fontPairing}".
-- Overall Aesthetic: Adhere to the style: "${input.style}".
+- Typographic Style: Apply a font style inspired by the font pairing parameter: "${input.fontPairing}".
+- Overall Aesthetic: Adhere to the style parameter: "${input.style}".
 - Aspect Ratio & Resolution: The regenerated image must inherently be high resolution and perfectly suitable for a 1920x1080 YouTube thumbnail (16:9 aspect ratio).
 
-IMPORTANT - TEXT CONTENT (CRITICAL FOR REGENERATION):
-The text displayed on the regenerated thumbnail image MUST be derived *ONLY* from the absolute most essential, concise phrase or keywords from the video topic: "${input.videoTopic}". It must be extremely short, impactful, and clear. Absolutely NO additional words, sentences, or elaborations beyond this core topic phrase are permitted.
+IMPORTANT - PARAMETER USAGE & TEXT RESTRICTIONS (ABSOLUTELY CRITICAL FOR REGENERATION):
+1. Parameter Influence, NOT Text: The selected Color Scheme ("${input.colorScheme}"), Font Pairing ("${input.fontPairing}"), and Style ("${input.style}") are for INSPIRATION and GUIDANCE of the visual design ONLY. Their names or descriptions (e.g., "Bright & Punchy", "Modern Sans Serif Duo") MUST NOT appear as text anywhere on the regenerated thumbnail image.
+2. Video Topic is KING for Text: The ONLY text permitted on the regenerated thumbnail image MUST be a very short, impactful phrase or keywords derived directly and exclusively from the Video Topic: "${input.videoTopic}". NO other words, sentences, or descriptions (especially not parameter names) should be written on the image.
 
-IMPORTANT - PARAMETER USAGE:
-Do NOT include the literal names of the color scheme, font pairing, or style as text on the thumbnail image itself. Instead, *use* these selections to *guide* all visual design choices.
+Recap for Text: The text on the regenerated thumbnail must be concise, taken ONLY from the video topic. All other parameters guide the visual style, not the text content.
 
 Aim for a clear upgrade, featuring strong, legible text (derived *only* from "${input.videoTopic}") and a clean, uncluttered layout.`;
 
@@ -112,9 +112,9 @@ Aim for a clear upgrade, featuring strong, legible text (derived *only* from "${
 
     if (input.uploadedImageDataUri) {
       promptParts.push({ media: {url: input.uploadedImageDataUri }}); // New uploaded image is the second media item, if present.
-      regenerationInstructionsText += `\n\nCRITICAL INSTRUCTION FOR REGENERATION (NEW USER IMAGE PROVIDED):\n- The FIRST media item in this prompt is the *previous thumbnail*.\n- The SECOND media item in this prompt is a *newly uploaded image* by the user.\nYOUR ABSOLUTE TOP PRIORITY is to use the NEWLY UPLOADED IMAGE (the second media item) as the dominant visual foundation for the regenerated thumbnail. It must be the central focus or main background. You may draw MINOR inspiration or subtle elements from the PREVIOUS THUMBNAIL (the first media item) ONLY if they directly enhance and integrate seamlessly with the new uploaded image and fit the overall design goals of clarity, modernity, and professionalism.\nThe final design MUST heavily feature and be built around the new user-uploaded image while adhering to the Video Topic ("${input.videoTopic}"), Color Scheme ("${input.colorScheme}"), Font Pairing ("${input.fontPairing}"), and Style ("${input.style}"). Remember, the text displayed on the regenerated thumbnail image MUST be derived *ONLY* from the absolute most essential, concise phrase or keywords from the video topic: "${input.videoTopic}". It must be extremely short, impactful, and clear.`;
+      regenerationInstructionsText += `\n\nCRITICAL INSTRUCTION FOR REGENERATION (NEW USER IMAGE PROVIDED):\n- The FIRST media item in this prompt is the *previous thumbnail*.\n- The SECOND media item in this prompt is a *newly uploaded image* by the user.\nYOUR ABSOLUTE TOP PRIORITY is to use the NEWLY UPLOADED IMAGE (the second media item) as the dominant visual foundation for the regenerated thumbnail. It must be the central focus or main background. You may draw MINOR inspiration or subtle elements from the PREVIOUS THUMBNAIL (the first media item) ONLY if they directly enhance and integrate seamlessly with the new uploaded image and fit the overall design goals of clarity, modernity, and professionalism.\nThe final design MUST heavily feature and be built around the new user-uploaded image. REMEMBER THE CRITICAL TEXT AND PARAMETER USAGE RULES ABOVE: Parameter names (like "${input.colorScheme}") are for design guidance only and MUST NOT be written on the image. Text on the image MUST come ONLY from the Video Topic ("${input.videoTopic}").`;
     } else {
-      regenerationInstructionsText += `\n\nINSTRUCTION FOR REGENERATION (NO NEW USER IMAGE):\n- The media item provided in this prompt is the *previous thumbnail*.\nYour task is to significantly refine this design to make it better, adhering to all the quality guidelines mentioned above and the specific parameters: Video Topic ("${input.videoTopic}"), Color Scheme ("${input.colorScheme}"), Font Pairing ("${input.fontPairing}"), and Style ("${input.style}"). The text displayed on the regenerated thumbnail image MUST be derived *ONLY* from the absolute most essential, concise phrase or keywords from the video topic: "${input.videoTopic}". It must be extremely short, impactful, and clear.`;
+      regenerationInstructionsText += `\n\nINSTRUCTION FOR REGENERATION (NO NEW USER IMAGE):\n- The media item provided in this prompt is the *previous thumbnail*.\nYour task is to significantly refine this design to make it better, adhering to all the quality guidelines mentioned above. REMEMBER THE CRITICAL TEXT AND PARAMETER USAGE RULES ABOVE: Parameter names (like "${input.colorScheme}") are for design guidance only and MUST NOT be written on the image. Text on the image MUST come ONLY from the Video Topic ("${input.videoTopic}").`;
     }
     promptParts.push({text: regenerationInstructionsText});
 
@@ -129,5 +129,3 @@ Aim for a clear upgrade, featuring strong, legible text (derived *only* from "${
     return {thumbnail: media.url!};
   }
 );
-
-    
